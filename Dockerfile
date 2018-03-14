@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --force-yes \
     rcs build-essential zlib1g-dev pkg-config libexpat1-dev libgeoip-dev libbz2-dev libaio-dev libreadline-dev libncurses5-dev \
     libpcre3-dev libfreetype6-dev libmcrypt-dev libcurl4-openssl-dev libxml2-dev libpng-dev libjpeg-dev libpng-dev libwebp-dev \
     python-pip cmake re2c autoconf bison curl wget unzip git memcached openssl openssh-server supervisor \
-    cmake libzip-dev re2c
+    cmake libzip-dev libssl-dev re2c
 # Install php
 ADD https://github.com/php/php-src/archive/master.tar.gz .
 RUN tar zxvf /master.tar.gz && cd php-src-master && ./buildconf && ./configure \
