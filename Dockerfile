@@ -4,6 +4,20 @@ RUN apt-get update && apt-get install -y --force-yes rcs build-essential zlib1g-
     libssl-dev libzip-dev libexpat1-dev libgeoip-dev libbz2-dev libaio-dev libreadline-dev libncurses5-dev \
     libpcre3-dev libmcrypt-dev libcurl4-openssl-dev libxml2-dev libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev \
     cmake re2c autoconf bison curl wget unzip git memcached openssl openssh-server supervisor
+# Install mariadb
+RUN wget https://downloads.mariadb.com/MariaDB/mariadb-10.2.13/source/mariadb-10.2.13.tar.gz -O mariadb.tar.gz
+RUN tar zxvf /mariadb.tar.gz && cd mariadb && cmake . \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+    -DMYSQL_DATADIR=/data/mysql \
+    -DSYSCONFDIR=/etc/mysql \
+    -DWITHOUT_TOKUDB=1 \
+    -DMYSQL_UNIX_ADDR=/tmp/mysql.sock \
+    -DDEFAULT_CHARSET=utf8 \
+    -DDEFAULT_COLLATION=utf8_general_ci \
+    -DWITHOUT_INNOBASE_STORAGE_ENGINE=1 \
+    -DWITHOUT_ARCHIVE_STORAGE_ENGINE=1 \
+    -DWITHOUT_BLACKHOLE_STORAGE_ENGINE=1 \
+&& make -j "$(nproc)" && make install && rm -rf /mariadb.tar.gz /mariadb
 # Install php
 ADD https://github.com/php/php-src/archive/master.tar.gz .
 RUN tar zxvf /master.tar.gz && cd php-src-master && ./buildconf && ./configure \
@@ -52,10 +66,10 @@ RUN tar zxvf /master.tar.gz && cd php-src-master && ./buildconf && ./configure \
     --without-gdbm \
     --enable-fast-install \
     --disable-fileinfo \
-&& make && make install && rm -rf /master.tar.gz /php-src-master
+&& make -j "$(nproc)" && make install && rm -rf /master.tar.gz /php-src-master
 # Install tengine
 ADD https://github.com/alibaba/tengine/archive/master.tar.gz .
-RUN tar zxvf /master.tar.gz && cd tengine-master && ./configure --with-http_concat_module && make && make install && rm -rf /master.tar.gz /tengine-master
+RUN tar zxvf /master.tar.gz && cd tengine-master && ./configure --with-http_concat_module && make -j "$(nproc)" && make install && rm -rf /master.tar.gz /tengine-master
 # Install tingyun
 RUN wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb
 RUN wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb
