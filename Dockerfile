@@ -5,8 +5,8 @@ RUN apt-get update && apt-get install -y --force-yes rcs build-essential zlib1g-
     libpcre3-dev libmcrypt-dev libcurl4-openssl-dev libxml2-dev libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev \
     cmake re2c autoconf bison curl wget unzip git memcached openssl openssh-server supervisor
 # Install mariadb
-ADD https://downloads.mariadb.com/MariaDB/mariadb-10.2.13/source/mariadb-10.2.13.tar.gz .
-RUN tar zxvf /mariadb-10.2.13.tar.gz && cd mariadb-10.2.13 && cmake . \
+RUN git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git 
+RUN cd server && cmake . \
     -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
     -DMYSQL_DATADIR=/data/mysql \
     -DSYSCONFDIR=/etc/mysql \
