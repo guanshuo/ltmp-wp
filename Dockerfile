@@ -1,12 +1,16 @@
 FROM ubuntu:xenial
+RUN  \
+
 # apt install
-RUN apt-get update && apt-get install -y --force-yes rcs build-essential zlib1g-dev pkg-config \
-    libssl-dev libzip-dev libexpat1-dev libgeoip-dev libbz2-dev libaio-dev libreadline-dev libncurses5-dev \
-    libpcre3-dev libmcrypt-dev libcurl4-openssl-dev libxml2-dev libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev \
-    cmake re2c autoconf bison curl wget unzip git memcached openssl openssh-server supervisor
+apt-get update && \
+apt-get install -y --force-yes rcs build-essential zlib1g-dev pkg-config cmake re2c autoconf bison curl wget unzip \
+libssl-dev libzip-dev libexpat1-dev libgeoip-dev libbz2-dev libaio-dev libreadline-dev libncurses5-dev \
+libpcre3-dev libmcrypt-dev libcurl4-openssl-dev libxml2-dev libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev \
+git memcached openssl openssh-server supervisor && \
+
 # Install mariadb
-RUN git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git 
-RUN cd server && cmake . \
+git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git && \
+cd server && cmake . \
     -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
     -DMYSQL_DATADIR=/data/mysql \
     -DSYSCONFDIR=/etc/mysql \
@@ -17,10 +21,11 @@ RUN cd server && cmake . \
     -DWITHOUT_INNOBASE_STORAGE_ENGINE=1 \
     -DWITHOUT_ARCHIVE_STORAGE_ENGINE=1 \
     -DWITHOUT_BLACKHOLE_STORAGE_ENGINE=1 \
-&& make -j "$(nproc)" && make install && make clean && rm -rf /mariadb.tar.gz /mariadb
+&& make -j "$(nproc)" && make install && make clean && rm -rf /mariadb.tar.gz /mariadb && cd / && \ 
+
 # Install php
-ADD https://github.com/php/php-src/archive/master.tar.gz .
-RUN tar zxvf /master.tar.gz && cd php-src-master && ./buildconf && ./configure \
+git clone --recurse-submodules --depth=1 https://github.com/php/php-src.git && \
+cd php-src && ./buildconf && ./configure \
     --prefix=/usr/local/php7 \
     --exec-prefix=/usr/local/php7 \
     --bindir=/usr/local/php7/bin \
@@ -66,14 +71,22 @@ RUN tar zxvf /master.tar.gz && cd php-src-master && ./buildconf && ./configure \
     --without-gdbm \
     --enable-fast-install \
     --disable-fileinfo \
-&& make -j "$(nproc)" && make install && make clean && rm -rf /master.tar.gz /php-src-master
+&& make -j "$(nproc)" && make install && make clean && rm -rf /php-src && \
+
 # Install tengine
-ADD https://github.com/alibaba/tengine/archive/master.tar.gz .
-RUN tar zxvf /master.tar.gz && cd tengine-master && ./configure --with-http_concat_module && make -j "$(nproc)" && make install && make clean && rm -rf /master.tar.gz /tengine-master
+git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git && \
+cd tengine && ./configure \
+    --with-http_concat_module \
+&& make -j "$(nproc)" && make install && make clean && rm -rf /tengine && \
+
+# clean
+apt-get clean && apt-get autoremove && \
+
 # Install tingyun
-RUN wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb
-RUN wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb
-RUN dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb
+wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb && \
+wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb && \
+dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb
+
 # Start
 ADD start.sh /start.sh
 RUN sed -i -e 's/\r//g' /start.sh && sed -i -e 's/^M//g' /start.sh && chmod +x /*.sh
