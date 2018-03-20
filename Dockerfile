@@ -71,13 +71,13 @@ cd php-src && ./buildconf && ./configure \
     --without-gdbm \
     --enable-fast-install \
     --disable-fileinfo \
-&& make -j "$(nproc)" && make install && make clean && rm -rf /php-src && \
+&& make -j "$(nproc)" && make install && make clean && rm -rf /php-src && cd / && \ 
 
 # Install tengine
 git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git && \
 cd tengine && ./configure \
     --with-http_concat_module \
-&& make -j "$(nproc)" && make install && make clean && rm -rf /tengine && \
+&& make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / && \ 
 
 # clean
 apt-get clean && apt-get autoremove && \
