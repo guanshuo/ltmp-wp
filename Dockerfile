@@ -36,7 +36,7 @@ apk add --update --no-cache --virtual .build-deps \
     readline-dev \
     zlib-dev &&
 
-apk add --no-cache --virtual .run-deps \
+apk add --update --no-cache --virtual .run-deps \
     # public
     git \
     memcached \
