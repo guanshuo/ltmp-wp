@@ -1,8 +1,45 @@
-FROM ubuntu:xenial
+FROM alpine:edge
 RUN  \
 
 # apt install
-apt-get update && \
+apk add --update --no-cache --virtual .php-build-deps \
+    autoconf \
+    dpkg-dev dpkg \
+    file \
+    g++ \
+    gcc \
+    libc-dev \
+    make \
+    pkgconf \
+    re2c \
+    coreutils \
+    curl-dev \
+    libedit-dev \
+    libressl-dev \
+    libsodium-dev \
+    libxml2-dev \
+    sqlite-dev &&
+
+apk add --no-cache --virtual .php-run-deps \
+    ca-certificates \
+    curl \
+    tar \
+    xz \
+    libressl &&
+
+apk add --no-cache --virtual .mariadb-build-deps \
+    
+    &&
+apk add --no-cache --virtual .mariadb-run-deps \
+    libaio \
+    libstdc++ \
+    make \
+    pwgen \
+    sudo \
+    tzdata \
+
+
+
 apt-get install -y --force-yes rcs build-essential zlib1g-dev pkg-config cmake re2c autoconf bison curl wget unzip \
 libssl-dev libzip-dev libexpat1-dev libgeoip-dev libbz2-dev libaio-dev libreadline-dev libncurses5-dev \
 libpcre3-dev libmcrypt-dev libcurl4-openssl-dev libxml2-dev libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev \
@@ -80,7 +117,7 @@ cd tengine && ./configure \
 && make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / && \ 
 
 # clean
-apt-get clean && apt-get autoremove && \
+
 
 # Install tingyun
 wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb && \
