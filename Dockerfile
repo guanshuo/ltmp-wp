@@ -34,9 +34,9 @@ apk add --update --no-cache --virtual .build-deps \
     ncurses-dev \
     patch \
     readline-dev \
-    zlib-dev &&
+    zlib-dev && \
 
-apk add --update --no-cache --virtual .run-deps \
+apk add --no-cache --virtual .run-deps \
     # public
     git \
     memcached \
@@ -55,7 +55,7 @@ apk add --update --no-cache --virtual .run-deps \
     libstdc++ \
     pwgen \
     sudo \
-    tzdata &&
+    tzdata && \
 
 # Install mariadb
 git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git && \
