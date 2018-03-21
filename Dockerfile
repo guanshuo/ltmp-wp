@@ -60,7 +60,7 @@ apk add --no-cache --virtual .run-deps \
 # Install mariadb
 git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git && \
 cd server && cmake . \
-    -DBUILD_CONFIG=mysql_release
+    -DBUILD_CONFIG=mysql_release \
     -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
     -DMYSQL_DATADIR=/data/mysql \
     -DSYSCONFDIR=/etc/mysql \
