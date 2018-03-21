@@ -2,48 +2,60 @@ FROM alpine:edge
 RUN  \
 
 # apt install
-apk add --update --no-cache --virtual .php-build-deps \
+apk add --update --no-cache --virtual .build-deps \
+    # public
     autoconf \
+    coreutils \
+    libressl-dev \
+    make \
+    
+    # php
     dpkg-dev dpkg \
     file \
     g++ \
     gcc \
     libc-dev \
-    make \
     pkgconf \
     re2c \
-    coreutils \
     curl-dev \
     libedit-dev \
-    libressl-dev \
     libsodium-dev \
     libxml2-dev \
-    sqlite-dev &&
+    sqlite-dev \
+    
+    # mariadb
+    attr \
+    bison \
+    build-base \
+    cmake \
+    gnupg \
+    libaio-dev \
+    linux-headers \
+    ncurses-dev \
+    patch \
+    readline-dev \
+    zlib-dev &&
 
-apk add --no-cache --virtual .php-run-deps \
+apk add --no-cache --virtual .run-deps \
+    # public
+    git \
+    memcached \
+    openssl openssh-server \
+    supervisor \
+    
+    # php
     ca-certificates \
     curl \
     tar \
     xz \
-    libressl &&
-
-apk add --no-cache --virtual .mariadb-build-deps \
+    libressl \
     
-    &&
-apk add --no-cache --virtual .mariadb-run-deps \
+    # mariadb
     libaio \
     libstdc++ \
-    make \
     pwgen \
     sudo \
-    tzdata \
-
-
-
-apt-get install -y --force-yes rcs build-essential zlib1g-dev pkg-config cmake re2c autoconf bison curl wget unzip \
-libssl-dev libzip-dev libexpat1-dev libgeoip-dev libbz2-dev libaio-dev libreadline-dev libncurses5-dev \
-libpcre3-dev libmcrypt-dev libcurl4-openssl-dev libxml2-dev libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev \
-git memcached openssl openssh-server supervisor && \
+    tzdata &&
 
 # Install mariadb
 git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git && \
@@ -116,13 +128,15 @@ cd tengine && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / && \ 
 
-# clean
-
-
 # Install tingyun
 wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb && \
 wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb && \
-dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb
+dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb && \ 
+
+# clean
+apk del --purge .build-deps; \
+rm -rf /tmp/*; \
+rm -rf /var/cache/apk/*
 
 # Start
 ADD start.sh /start.sh
