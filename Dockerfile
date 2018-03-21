@@ -60,6 +60,7 @@ apk add --no-cache --virtual .run-deps \
 # Install mariadb
 git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git && \
 cd server && cmake . \
+    -DBUILD_CONFIG=mysql_release
     -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
     -DMYSQL_DATADIR=/data/mysql \
     -DSYSCONFDIR=/etc/mysql \
@@ -74,7 +75,8 @@ cd server && cmake . \
 
 # Install php
 git clone --recurse-submodules --depth=1 https://github.com/php/php-src.git && \
-cd php-src && ./buildconf && ./configure \
+cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
+    --build="$gnuArch" \
     --prefix=/usr/local/php7 \
     --exec-prefix=/usr/local/php7 \
     --bindir=/usr/local/php7/bin \
