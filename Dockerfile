@@ -153,6 +153,7 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
     --with-zlib \
     --enable-zip \
     --enable-inline-optimization \
+    --disable-cgi \
     --disable-debug \
     --disable-rpath \
     --enable-shared \
@@ -180,7 +181,18 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
     --without-gdbm \
     --enable-fast-install \
     --disable-fileinfo \
-&& make -j "$(nproc)" && make install && make clean && rm -rf /php-src && cd / && \ 
+&& make -j "$(nproc)" && make install \
+&& { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
+&& make clean && cd / \
+&& runDeps="$( \
+	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
+		| tr ',' '\n' \
+		| sort -u \
+		| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+)" \
+&& apk add --no-cache --virtual .php-run-deps $runDeps \
+&& pecl update-channels \
+&& rm -rf /php-src; \ 
 
 # Install tengine
 git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git && \
