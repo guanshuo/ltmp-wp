@@ -106,7 +106,7 @@ cd server && cmake . \
 make -j "$(nproc)" && make install && make clean && cd / && \ 
 # Remove dev, test, doc, benchmark related files.
 rm -rf \
-    /mariadb.tar.gz /mariadb \
+    /server \
     /usr/share/man \
     /usr/include/mysql \
     /usr/mysql-test \
