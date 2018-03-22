@@ -61,17 +61,75 @@ apk add --no-cache --virtual .run-deps \
 git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git && \
 cd server && cmake . \
     -DBUILD_CONFIG=mysql_release \
-    -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
-    -DMYSQL_DATADIR=/data/mysql \
+     # 指定CMAKE编译后的安装的目录
+    -DCMAKE_INSTALL_PREFIX=/usr \
     -DSYSCONFDIR=/etc/mysql \
-    -DWITHOUT_TOKUDB=1 \
-    -DMYSQL_UNIX_ADDR=/tmp/mysql.sock \
+     # 默认数据目录
+    -DMYSQL_DATADIR=/data/mysql \
+    -DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock \
     -DDEFAULT_CHARSET=utf8 \
     -DDEFAULT_COLLATION=utf8_general_ci \
+    -DENABLED_LOCAL_INFILE=ON \
+    -DINSTALL_INFODIR=share/mysql/docs \
+    -DINSTALL_MANDIR=share/man \
+    -DINSTALL_PLUGINDIR=lib/mysql/plugin \
+    -DINSTALL_SCRIPTDIR=bin \
+    -DINSTALL_INCLUDEDIR=include/mysql \
+    -DINSTALL_DOCREADMEDIR=share/mysql \
+    -DINSTALL_SUPPORTFILESDIR=share/mysql \
+    -DINSTALL_MYSQLSHAREDIR=share/mysql \
+    -DINSTALL_DOCDIR=share/mysql/docs \
+    -DINSTALL_SHAREDIR=share/mysql \
+     # 库文件加载选项
+    -DWITH_READLINE=ON \
+    -DWITH_ZLIB=system \
+    -DWITH_SSL=system \
+    -DWITH_LIBWRAP=OFF \
+     # JEMALLOC优化内存
+    -DWITH_JEMALLOC=no \
+    -DWITH_EXTRA_CHARSETS=complex \
+    -DWITH_EMBEDDED_SERVER=ON \
+    -DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+    -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+    -DWITH_INNOBASE_STORAGE_ENGINE=1 \
+    -DWITH_PARTITION_STORAGE_ENGINE=1 \
+     # 不安装tokudb引擎
+    -DPLUGIN_TOKUDB=NO \
+    -DWITHOUT_TOKUDB=1 \
+     # 不编译某存储引擎
     -DWITHOUT_INNOBASE_STORAGE_ENGINE=1 \
     -DWITHOUT_ARCHIVE_STORAGE_ENGINE=1 \
     -DWITHOUT_BLACKHOLE_STORAGE_ENGINE=1 \
-&& make -j "$(nproc)" && make install && make clean && rm -rf /mariadb.tar.gz /mariadb && cd / && \ 
+    -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
+    -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
+    -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
+make -j "$(nproc)" && make install && make clean && cd / && \ 
+    # Remove dev, test, doc, benchmark related files.
+    rm -rf \
+        /mariadb.tar.gz /mariadb
+        /usr/share/man \
+        /usr/include/mysql \
+        /usr/mysql-test \
+        /usr/sql-bench \
+        /usr/lib/libmysqlclient.so* \
+        /usr/lib/libmysqlclient_r.so* \
+        /usr/lib/libmysqld.so.* \
+        /usr/bin/mysql_config \
+        /usr/bin/mysql_client_test; \
+    \
+    find /usr/lib -name '*.a' -maxdepth 1 -print0 | xargs -0 rm; \
+    find /usr/lib -name '*.so' -type l -maxdepth 1 -print0 | xargs -0 rm; \
+    \
+    # Stripping binaries and .so files.
+    scanelf --symlink --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" \
+        /usr/bin/* /usr/lib/mysql/plugin/* | while read type osabi filename; do \
+        ([ "$osabi" != "STANDALONE" ] && [ "${filename}" != "/usr/bin/strip" ]) || continue; \
+        XATTR=$(getfattr --match="" --dump "${filename}"); \
+        strip "${filename}"; \
+        if [ -n "$XATTR" ]; then \
+            echo "$XATTR" | setfattr --restore=-; \
+        fi; \
+    done; \
 
 # Install php
 git clone --recurse-submodules --depth=1 https://github.com/php/php-src.git && \
