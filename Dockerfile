@@ -104,32 +104,30 @@ cd server && cmake . \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
 make -j "$(nproc)" && make install && make clean && cd / && \ 
-    # Remove dev, test, doc, benchmark related files.
-    rm -rf \
-        /mariadb.tar.gz /mariadb \
-        /usr/share/man \
-        /usr/include/mysql \
-        /usr/mysql-test \
-        /usr/sql-bench \
-        /usr/lib/libmysqlclient.so* \
-        /usr/lib/libmysqlclient_r.so* \
-        /usr/lib/libmysqld.so.* \
-        /usr/bin/mysql_config \
-        /usr/bin/mysql_client_test; \
-    \
-    find /usr/lib -name '*.a' -maxdepth 1 -print0 | xargs -0 rm; \
-    find /usr/lib -name '*.so' -type l -maxdepth 1 -print0 | xargs -0 rm; \
-    \
-    # Stripping binaries and .so files.
-    scanelf --symlink --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" \
-        /usr/bin/* /usr/lib/mysql/plugin/* | while read type osabi filename; do \
-        ([ "$osabi" != "STANDALONE" ] && [ "${filename}" != "/usr/bin/strip" ]) || continue; \
-        XATTR=$(getfattr --match="" --dump "${filename}"); \
-        strip "${filename}"; \
-        if [ -n "$XATTR" ]; then \
-            echo "$XATTR" | setfattr --restore=-; \
-        fi; \
-    done; \
+# Remove dev, test, doc, benchmark related files.
+rm -rf \
+    /mariadb.tar.gz /mariadb \
+    /usr/share/man \
+    /usr/include/mysql \
+    /usr/mysql-test \
+    /usr/sql-bench \
+    /usr/lib/libmysqlclient.so* \
+    /usr/lib/libmysqlclient_r.so* \
+    /usr/lib/libmysqld.so.* \
+    /usr/bin/mysql_config \
+    /usr/bin/mysql_client_test; \
+find /usr/lib -name '*.a' -maxdepth 1 -print0 | xargs -0 rm; \
+find /usr/lib -name '*.so' -type l -maxdepth 1 -print0 | xargs -0 rm; \
+# Stripping binaries and .so files.
+scanelf --symlink --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" \
+    /usr/bin/* /usr/lib/mysql/plugin/* | while read type osabi filename; do \
+    ([ "$osabi" != "STANDALONE" ] && [ "${filename}" != "/usr/bin/strip" ]) || continue; \
+    XATTR=$(getfattr --match="" --dump "${filename}"); \
+    strip "${filename}"; \
+    if [ -n "$XATTR" ]; then \
+        echo "$XATTR" | setfattr --restore=-; \
+    fi; \
+done; \
 
 # Install php
 git clone --recurse-submodules --depth=1 https://github.com/php/php-src.git && \
