@@ -104,7 +104,7 @@ cd server && cmake . \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
 make -j "$(nproc)" && make install && make clean && cd / && \ 
-# Remove dev, test, doc, benchmark related files.
+# 删除构建文件、测试文件、说明文档、检测文件等
 rm -rf \
     /server \
     /usr/share/man \
@@ -118,7 +118,7 @@ rm -rf \
     /usr/bin/mysql_client_test; \
 find /usr/lib -name '*.a' -maxdepth 1 -print0 | xargs -0 rm; \
 find /usr/lib -name '*.so' -type l -maxdepth 1 -print0 | xargs -0 rm; \
-# Stripping binaries and .so files.
+# 扫描共享目录，并移除无用的二进制文件与.so文件
 scanelf --symlink --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" \
     /usr/bin/* /usr/lib/mysql/plugin/* | while read type osabi filename; do \
     ([ "$osabi" != "STANDALONE" ] && [ "${filename}" != "/usr/bin/strip" ]) || continue; \
