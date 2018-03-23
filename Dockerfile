@@ -55,10 +55,10 @@ apk add --no-cache --virtual .run-deps \
     libstdc++ \
     pwgen \
     sudo \
-    tzdata && \
+    tzdata ; \
 
 # Install mariadb
-git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git && \
+git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git ; \
 cd server && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
@@ -103,31 +103,7 @@ cd server && cmake . \
     -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
-make -j "$(nproc)" && make install && make clean && cd / && \ 
-# 删除构建文件、测试文件、说明文档、检测文件等
-rm -rf \
-    /server \
-    /usr/share/man \
-    /usr/include/mysql \
-    /usr/mysql-test \
-    /usr/sql-bench \
-    /usr/lib/libmysqlclient.so* \
-    /usr/lib/libmysqlclient_r.so* \
-    /usr/lib/libmysqld.so.* \
-    /usr/bin/mysql_config \
-    /usr/bin/mysql_client_test; \
-find /usr/lib -name '*.a' -maxdepth 1 -print0 | xargs -0 rm; \
-find /usr/lib -name '*.so' -type l -maxdepth 1 -print0 | xargs -0 rm; \
-# 扫描共享目录，并移除无用的二进制文件与.so文件
-scanelf --symlink --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" \
-    /usr/bin/* /usr/lib/mysql/plugin/* | while read type osabi filename; do \
-    ([ "$osabi" != "STANDALONE" ] && [ "${filename}" != "/usr/bin/strip" ]) || continue; \
-    XATTR=$(getfattr --match="" --dump "${filename}"); \
-    strip "${filename}"; \
-    if [ -n "$XATTR" ]; then \
-        echo "$XATTR" | setfattr --restore=-; \
-    fi; \
-done; \
+make -j "$(nproc)" && make install && make clean && rm -rf /server && cd / ; \
 
 # Install php
 git clone --recurse-submodules --depth=1 https://github.com/php/php-src.git && \
@@ -188,22 +164,46 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
 		| sort -u \
 		| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 )" \
-&& apk add --no-cache --virtual .php-run-deps $runDeps \
+&& apk add --no-cache --virtual .run-deps $runDeps \
 && pecl update-channels \
 && rm -rf /php-src; \ 
 
 # Install tengine
-git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git && \
+git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git ; \
 cd tengine && ./configure \
     --with-http_concat_module \
-&& make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / && \ 
+&& make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / ; \
 
 # Install tingyun
-wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb && \
-wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb && \
-dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb && \ 
+wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb ; \
+wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb ; \
+dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb ; \
 
 # clean
+# 删除构建文件、测试文件、说明文档、检测文件等
+rm -rf \
+    /usr/share/man \
+    /usr/include/mysql \
+    /usr/mysql-test \
+    /usr/sql-bench \
+    /usr/lib/libmysqlclient.so* \
+    /usr/lib/libmysqlclient_r.so* \
+    /usr/lib/libmysqld.so.* \
+    /usr/bin/mysql_config \
+    /usr/bin/mysql_client_test; \
+find /usr/lib -name '*.a' -maxdepth 1 -print0 | xargs -0 rm; \
+find /usr/lib -name '*.so' -type l -maxdepth 1 -print0 | xargs -0 rm; \
+# 扫描共享目录，并移除无用的二进制文件与.so文件
+scanelf --symlink --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" \
+    /usr/bin/* /usr/lib/mysql/plugin/* | while read type osabi filename; do \
+    ([ "$osabi" != "STANDALONE" ] && [ "${filename}" != "/usr/bin/strip" ]) || continue; \
+    XATTR=$(getfattr --match="" --dump "${filename}"); \
+    strip "${filename}"; \
+    if [ -n "$XATTR" ]; then \
+        echo "$XATTR" | setfattr --restore=-; \
+    fi; \
+done; \
+
 apk del --purge .build-deps; \
 rm -rf /tmp/*; \
 rm -rf /var/cache/apk/*
