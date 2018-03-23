@@ -179,7 +179,6 @@ wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x8
 wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb ; \
 dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb ; \
 
-# clean
 # 删除构建文件、测试文件、说明文档、检测文件等
 rm -rf \
     /usr/share/man \
@@ -203,7 +202,7 @@ scanelf --symlink --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" \
         echo "$XATTR" | setfattr --restore=-; \
     fi; \
 done; \
-
+# 清理构建依赖及软件包缓存
 apk del --purge .build-deps; \
 rm -rf /tmp/*; \
 rm -rf /var/cache/apk/*
