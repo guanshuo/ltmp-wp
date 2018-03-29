@@ -88,8 +88,16 @@ rm -rf /tmp/*; \
 rm -rf /var/cache/apk/*
 
 # Start
-ADD start.sh /start.sh
-RUN sed -i -e 's/\r//g' /start.sh && sed -i -e 's/^M//g' /start.sh && chmod +x /*.sh
 VOLUME ["/data"]
 EXPOSE 22 80 3306 8388 9001 11211
-CMD ["sh", "-c", "echo $git_url"]
+
+CMD ["sh", "-c", " \
+
+if [ ! -d /data/www ]; then \
+  mkdir data/www && cd /data/www/ && git init && git remote add origin $(echo $git_url) && git pull origin master \
+else \
+  cd /data/www/ && git init && git pull origin master \
+fi \
+cp -f /data/www/configs/run.sh /run.sh && sed -i -e 's/\r//g' /run.sh && sed -i -e 's/^M//g' /run.sh && chmod +x /*.sh && . /run.sh \
+
+"]
