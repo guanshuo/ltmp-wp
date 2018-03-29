@@ -87,9 +87,9 @@ apk del --purge .build-deps; \
 rm -rf /tmp/*; \
 rm -rf /var/cache/apk/*; \
 # 设置软件参数
-sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config; \
+# sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config; \
 # 创建目录并设置权限
-mkdir /data/www && chown -R www-data:www-data /data/www/
+mkdir -p /data/www && chown -R www-data:www-data /data/www/
 # 开始
 VOLUME ["/data"]
 EXPOSE 22 80 3306 8388 9001 11211
