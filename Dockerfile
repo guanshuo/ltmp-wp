@@ -40,7 +40,7 @@ apk add --no-cache --virtual .run-deps \
     # public
     git \
     memcached \
-    openssl openssh-server \
+    openssl \
     supervisor \
     
     # php
@@ -85,13 +85,13 @@ done; \
 # 清理构建依赖及软件包缓存
 apk del --purge .build-deps; \
 rm -rf /tmp/*; \
-rm -rf /var/cache/apk/*
-
-# Start
+rm -rf /var/cache/apk/*; \
+# 设置软件参数
+sed -i s/#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config; \
+# 创建目录并设置权限
+mkdir data/www && chown -R www-data:www-data /data/www/; \
+# 开始
 VOLUME ["/data"]
 EXPOSE 22 80 3306 8388 9001 11211
-
-CMD ["sh", "-c", " \
-mkdir data/www && cd /data/www/ && git init && git remote add origin $(echo $git_url) && git pull origin master; \
-cp -f /data/www/configs/run.sh /run.sh && sed -i -e 's/\r//g' /run.sh && sed -i -e 's/^M//g' /run.sh && chmod +x /*.sh && . /run.sh \
-"]
+CMD ["-c", "cd /data/www/ && git init && git remote add origin $(echo $git_url) && git pull origin master; \
+cp -f /data/www/configs/run.sh /run.sh && sed -i -e 's/\r//g' /run.sh && sed -i -e 's/^M//g' /run.sh && chmod +x /*.sh && . /run.sh "]
