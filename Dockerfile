@@ -40,7 +40,7 @@ apk add --no-cache --virtual .run-deps \
     # public
     git \
     memcached \
-    openssl \
+    openssl openssh-server \
     supervisor \
     
     # php
@@ -87,7 +87,7 @@ apk del --purge .build-deps; \
 rm -rf /tmp/*; \
 rm -rf /var/cache/apk/*; \
 # 设置软件参数
-# sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config; \
+sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config; \
 # 创建目录并设置权限
 mkdir -p /data/www
 # 开始
