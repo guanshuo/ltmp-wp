@@ -157,7 +157,7 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
     --disable-fileinfo \
 && make -j "$(nproc)" && make install \
 && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
-&& make clean && cd / \
+&& make clean && rm -rf /php-src && cd / \
 && runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 		| tr ',' '\n' \
@@ -165,8 +165,7 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
 		| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 )" \
 && apk add --no-cache --virtual .run-deps $runDeps \
-&& pecl update-channels \
-&& rm -rf /php-src; \ 
+&& pecl update-channels ; \ 
 
 # Install tengine
 git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git ; \
