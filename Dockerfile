@@ -9,7 +9,6 @@ apk add --update --no-cache --virtual .build-deps \
     coreutils \
     libressl-dev \
     make \
-    openssh-clients \
     # php
     dpkg-dev dpkg \
     file \
@@ -39,7 +38,7 @@ apk add --no-cache --virtual .run-deps \
     # public
     git \
     memcached \
-    openssl openssh-server \
+    openssl openssh \
     supervisor \
     # php
     ca-certificates \
