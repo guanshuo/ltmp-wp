@@ -65,8 +65,9 @@ else \
     # 有的话先设置ssh信息再用ssh协议下载
     sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
     sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
+    (echo;read;echo)|ssh-keygen -t rsa -C "12610446@qq.com" ; \
     cd /data/www/ && git init && git remote add origin $(echo $git_url) && git pull origin master && cd / ; \
-    cp -R -f /data/www/configs/id_rsa /root/.ssh/ && cp -R -f /data/www/configs/id_rsa.pub /root/.ssh/ ; \
+    cp -f /data/www/configs/id_rsa /root/.ssh/ && cp -f /data/www/configs/id_rsa.pub /root/.ssh/ ; \
     echo yes|ssh -T git@github.com ; \
     git clone --recurse-submodules --depth=1 git://github.com:MariaDB/server.git ; \
     git clone --recurse-submodules --depth=1 git://github.com:php/php-src.git ; \
