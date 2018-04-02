@@ -53,6 +53,7 @@ apk add --no-cache --virtual .run-deps \
     sudo \
     tzdata ; \
 # 设置git信息
+(echo;read;echo)|ssh-keygen -t rsa -C "12610446@qq.com" ; \
 git config --global user.name "guanshuo" && git config --global user.email "12610446@qq.com" ; \
 # 安装mariadb
 git clone --recurse-submodules --depth=1 git://github.com/MariaDB/server.git ; \
