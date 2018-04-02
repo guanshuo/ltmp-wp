@@ -54,7 +54,7 @@ apk add --no-cache --virtual .run-deps \
     tzdata ; \
 
 # Install mariadb
-git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git ; \
+git clone --recurse-submodules --depth=1 git@github.com:MariaDB/server.git ; \
 cd server && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
@@ -102,7 +102,7 @@ cd server && cmake . \
 make -j "$(nproc)" && make install && make clean && rm -rf /server && cd / ; \
 
 # Install php
-git clone --recurse-submodules --depth=1 https://github.com/php/php-src.git && \
+git clone --recurse-submodules --depth=1 git@github.com:php/php-src.git && \
 cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
     --prefix=/usr/local/php7 \
@@ -164,7 +164,7 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
 && pecl update-channels ; \ 
 
 # Install tengine
-git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git ; \
+git clone --recurse-submodules --depth=1 git@github.com:alibaba/tengine.git ; \
 cd tengine && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / ; \
