@@ -55,7 +55,7 @@ apk add --no-cache --virtual .run-deps \
 # 设置git信息
 git config --global user.name "guanshuo" && git config --global user.email "12610446@qq.com" ; \
 # 安装mariadb
-git clone --recurse-submodules --depth=1 git@github.com:MariaDB/server.git ; \
+echo yes | git clone --recurse-submodules --depth=1 git@github.com:MariaDB/server.git ; \
 cd server && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
@@ -103,7 +103,7 @@ cd server && cmake . \
 make -j "$(nproc)" && make install && make clean && rm -rf /server && cd / ; \
 
 # 安装php
-git clone --recurse-submodules --depth=1 git@github.com:php/php-src.git && \
+echo yes | git clone --recurse-submodules --depth=1 git@github.com:php/php-src.git && \
 cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
     --prefix=/usr/local/php7 \
@@ -165,7 +165,7 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
 && pecl update-channels ; \ 
 
 # 安装tengine
-git clone --recurse-submodules --depth=1 git@github.com:alibaba/tengine.git ; \
+echo yes | git clone --recurse-submodules --depth=1 git@github.com:alibaba/tengine.git ; \
 cd tengine && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / ; \
