@@ -1,6 +1,6 @@
 FROM alpine:edge
 RUN  \
-echo "http://mirrors.aliyun.com/alpine/v3.4/main/" > /etc/apk/repositories ; \
+echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 # apt install
 apk add --update --no-cache --virtual .build-deps \
     # public
