@@ -1,7 +1,7 @@
 FROM alpine:edge
 ARG git_url=""
 RUN  \
-echo $git_url
+echo "$git_url"
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 # apt install
