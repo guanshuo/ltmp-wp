@@ -2,7 +2,7 @@ FROM alpine:edge
 ARG git_url
 RUN  \
 # 创建目录
-mkdir -p /data/www
+mkdir -p /data/www ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 # apt install
