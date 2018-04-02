@@ -1,5 +1,6 @@
 FROM alpine:edge
 RUN  \
+# 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 # apt install
 apk add --update --no-cache --virtual .build-deps \
@@ -52,8 +53,9 @@ apk add --no-cache --virtual .run-deps \
     pwgen \
     sudo \
     tzdata ; \
-
-# Install mariadb
+# 设置git信息
+git config --global user.name "guanshuo" && git config --global user.email "12610446@qq.com" ; \
+# 安装mariadb
 git clone --recurse-submodules --depth=1 git@github.com:MariaDB/server.git ; \
 cd server && cmake . \
     -DBUILD_CONFIG=mysql_release \
@@ -101,7 +103,7 @@ cd server && cmake . \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
 make -j "$(nproc)" && make install && make clean && rm -rf /server && cd / ; \
 
-# Install php
+# 安装php
 git clone --recurse-submodules --depth=1 git@github.com:php/php-src.git && \
 cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
@@ -163,13 +165,13 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
 && apk add --no-cache --virtual .run-deps $runDeps \
 && pecl update-channels ; \ 
 
-# Install tengine
+# 安装tengine
 git clone --recurse-submodules --depth=1 git@github.com:alibaba/tengine.git ; \
 cd tengine && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / ; \
 
-# Install tingyun
+# 安装听云
 wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb ; \
 wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb ; \
 dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb ; \
@@ -204,7 +206,7 @@ rm -rf /var/cache/apk/*; \
 # 设置软件参数
 sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config; \
 # 创建目录并设置权限
-mkdir -p /data/www
+mkdir -p /data/www && chown -R www-data:www-data /data/www/
 # 开始
 VOLUME ["/data"]
 EXPOSE 22 80 3306 8388 9001 11211
