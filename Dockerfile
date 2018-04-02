@@ -1,6 +1,8 @@
 FROM alpine:edge
-ARG git_url=""
+ARG git_url
 RUN  \
+# 创建目录
+mkdir -p /data/www
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 # apt install
@@ -63,8 +65,8 @@ else \
     # 有的话先设置ssh信息再用ssh协议下载
     sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
     sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
-    ${git_url%.git*}"/raw/master/configs/id_rsa"|wget -P /root/.ssh ; \
-    ${git_url%.git*}"/raw/master/configs/id_rsa.pub"|wget -P /root/.ssh ; \
+    cd /data/www/ && git init && git remote add origin $(echo $git_url) && git pull origin master && cd / ; \
+    cp -f /data/www/configs/id_rsa /root/.ssh/ && cp -f /data/www/configs/id_rsa.pub /root/.ssh/ ; \
     echo yes|ssh -T git@github.com ; \
     git clone --recurse-submodules --depth=1 git://github.com:MariaDB/server.git ; \
     git clone --recurse-submodules --depth=1 git://github.com:php/php-src.git ; \
@@ -216,9 +218,7 @@ apk del --purge .build-deps; \
 rm -rf /tmp/*; \
 rm -rf /var/cache/apk/*; \
 # 设置软件参数
-sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config; \
-# 创建目录并设置权限
-mkdir -p /data/www
+sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config \
 # 开始
 VOLUME ["/data"]
 EXPOSE 22 80 3306 8388 9001 11211
