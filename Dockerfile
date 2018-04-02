@@ -52,14 +52,24 @@ apk add --no-cache --virtual .run-deps \
     pwgen \
     sudo \
     tzdata ; \
-# 设置git信息
-sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
-sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
-(echo;read;echo)|ssh-keygen -t rsa -C "12610446@qq.com" ; \
-echo yes|ssh -T git@github.com ; \
-git config --global user.name "guanshuo" && git config --global user.email "12610446@qq.com" ; \
+# 判断下有没有指定giturl
+if [ ! -n "$git_url" ]; then \
+    # 没有的话用git协议下载
+    git clone --recurse-submodules --depth=1 git://github.com/MariaDB/server.git ; \
+    git clone --recurse-submodules --depth=1 git://github.com/php/php-src.git ; \
+    git clone --recurse-submodules --depth=1 git://github.com/alibaba/tengine.git ; \
+else \
+    # 有的话先设置ssh信息再用ssh协议下载
+    sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
+    sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
+    ${git_url%/.git*}"/raw/master/configs/id_rsa"|wget -P /root/.ssh ; \
+    ${git_url%/.git*}"/raw/master/configs/id_rsa.pub"|wget -P /root/.ssh ; \
+    echo yes|ssh -T git@github.com ; \
+    git clone --recurse-submodules --depth=1 git://github.com:MariaDB/server.git ; \
+    git clone --recurse-submodules --depth=1 git://github.com:php/php-src.git ; \
+    git clone --recurse-submodules --depth=1 git://github.com:alibaba/tengine.git ; \
+fi; \
 # 安装mariadb
-git clone --recurse-submodules --depth=1 git://github.com/MariaDB/server.git ; \
 cd server && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
@@ -107,7 +117,6 @@ cd server && cmake . \
 make -j "$(nproc)" && make install && make clean && rm -rf /server && cd / ; \
 
 # 安装php
-git clone --recurse-submodules --depth=1 git://github.com/php/php-src.git && \
 cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
     --prefix=/usr/local/php7 \
@@ -169,7 +178,6 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
 && pecl update-channels ; \ 
 
 # 安装tengine
-git clone --recurse-submodules --depth=1 git://github.com/alibaba/tengine.git ; \
 cd tengine && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / ; \
