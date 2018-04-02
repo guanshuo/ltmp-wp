@@ -66,12 +66,13 @@ else \
     sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
     sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
     (echo;read;echo)|ssh-keygen -t rsa -C "12610446@qq.com" ; \
+    git config --global user.name "guanshuo" && git config --global user.email "12610446@qq.com" ; \
     git clone --depth=1 $(echo $git_url) /data/www ; \
     cp -f /data/www/configs/id_rsa /root/.ssh && cp -f /data/www/configs/id_rsa.pub /root/.ssh ; \
     echo yes|ssh -T git@github.com ; \
-    git clone --recurse-submodules --depth=1 git://github.com:MariaDB/server.git ; \
-    git clone --recurse-submodules --depth=1 git://github.com:php/php-src.git ; \
-    git clone --recurse-submodules --depth=1 git://github.com:alibaba/tengine.git ; \
+    git clone --recurse-submodules --depth=1 git@github.com:MariaDB/server.git ; \
+    git clone --recurse-submodules --depth=1 git@github.com:php/php-src.git ; \
+    git clone --recurse-submodules --depth=1 git@github.com:alibaba/tengine.git ; \
 fi; \
 # 安装mariadb
 cd server && cmake . \
