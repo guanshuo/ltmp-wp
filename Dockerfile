@@ -53,6 +53,8 @@ apk add --no-cache --virtual .run-deps \
     sudo \
     tzdata ; \
 # 设置git信息
+sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
+sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
 (echo;read;echo)|ssh-keygen -t rsa -C "12610446@qq.com" ; \
 echo yes|ssh -T git@github.com ; \
 git config --global user.name "guanshuo" && git config --global user.email "12610446@qq.com" ; \
