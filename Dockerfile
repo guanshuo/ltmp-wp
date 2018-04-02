@@ -4,7 +4,6 @@ RUN  \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 # apt install
-echo "$git_url" ; \
 apk add --update --no-cache --virtual .build-deps \
     # public
     autoconf \
