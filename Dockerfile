@@ -1,8 +1,11 @@
 FROM alpine:edge
+MAINTAINER guanshuo "12610446@qq.com"
 ARG git_url
 RUN  \
-# 创建目录
-mkdir -p /data/www ; \
+# 创建用户与数据目录
+addgroup -g 82 www-data ; \
+adduser -u 82 -G www-data www-data ; \
+mkdir -p /data/www && chown -R www-data:www-data /data/www/ ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 # apt install
@@ -58,15 +61,14 @@ apk add --no-cache --virtual .run-deps \
 # 判断下有没有指定giturl
 if [ ! -n "$git_url" ]; then \
     # 没有的话用git协议下载
-    git clone --recurse-submodules --depth=1 git://github.com/MariaDB/server.git ; \
-    git clone --recurse-submodules --depth=1 git://github.com/php/php-src.git ; \
-    git clone --recurse-submodules --depth=1 git://github.com/alibaba/tengine.git ; \
+    git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git ; \
+    git clone --recurse-submodules --depth=1 https://github.com/php/php-src.git ; \
+    git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git ; \
 else \
     # 有的话先设置ssh信息再用ssh协议下载
     sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
     sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
-    (echo;read;echo)|ssh-keygen -t rsa -C "12610446@qq.com" ; \
-    git config --global user.name "guanshuo" && git config --global user.email "12610446@qq.com" ; \
+    (echo;read;echo)|ssh-keygen -t rsa ; \
     git clone --depth=1 $(echo $git_url) /data/www ; \
     cp -f /data/www/configs/id_rsa /root/.ssh && cp -f /data/www/configs/id_rsa.pub /root/.ssh ; \
     echo yes|ssh -T git@github.com ; \
@@ -122,6 +124,9 @@ cd server && cmake . \
 make -j "$(nproc)" && make install && make clean && rm -rf /server && cd / ; \
 
 # 安装php
+export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
+       CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
+       LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" \
 cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
     --prefix=/usr/local/php7 \
