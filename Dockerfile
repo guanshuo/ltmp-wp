@@ -1,6 +1,6 @@
 FROM alpine:edge
 RUN  \
-
+echo "http://mirrors.aliyun.com/alpine/v3.4/main/" > /etc/apk/repositories ; \
 # apt install
 apk add --update --no-cache --virtual .build-deps \
     # public
@@ -8,7 +8,6 @@ apk add --update --no-cache --virtual .build-deps \
     coreutils \
     libressl-dev \
     make \
-    
     # php
     dpkg-dev dpkg \
     file \
@@ -22,7 +21,6 @@ apk add --update --no-cache --virtual .build-deps \
     libsodium-dev \
     libxml2-dev \
     sqlite-dev \
-    
     # mariadb
     attr \
     bison \
@@ -34,7 +32,7 @@ apk add --update --no-cache --virtual .build-deps \
     ncurses-dev \
     patch \
     readline-dev \
-    zlib-dev && \
+    zlib-dev ; \
 
 apk add --no-cache --virtual .run-deps \
     # public
@@ -42,14 +40,12 @@ apk add --no-cache --virtual .run-deps \
     memcached \
     openssl openssh-server \
     supervisor \
-    
     # php
     ca-certificates \
     curl \
     tar \
     xz \
     libressl \
-    
     # mariadb
     libaio \
     libstdc++ \
