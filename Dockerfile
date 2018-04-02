@@ -9,6 +9,7 @@ apk add --update --no-cache --virtual .build-deps \
     coreutils \
     libressl-dev \
     make \
+    openssh-clients \
     # php
     dpkg-dev dpkg \
     file \
@@ -34,7 +35,6 @@ apk add --update --no-cache --virtual .build-deps \
     patch \
     readline-dev \
     zlib-dev ; \
-
 apk add --no-cache --virtual .run-deps \
     # public
     git \
