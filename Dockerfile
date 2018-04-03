@@ -126,7 +126,7 @@ make -j "$(nproc)" && make install && make clean && rm -rf /server && cd / ; \
 # 安装php
 export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
-       LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" \
+       LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
 cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
     --prefix=/usr/local/php7 \
