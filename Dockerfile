@@ -58,6 +58,7 @@ apk add --no-cache --virtual .run-deps \
     pwgen \
     sudo \
     tzdata ; \
+git config --global http.postBuffer  524288000 ; \
 # 判断下有没有指定giturl
 if [ ! -n "$git_url" ]; then \
     # 没有的话用git协议下载
@@ -68,7 +69,6 @@ else \
     # 有的话先设置ssh信息再用ssh协议下载
     sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
     sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
-    git config --global http.postBuffer  524288000 ; \
     (echo;read;echo)|ssh-keygen -t rsa ; \
     git clone --depth=1 $(echo $git_url) /data/www ; \
     cp -f /data/www/configs/id_rsa /root/.ssh && cp -f /data/www/configs/id_rsa.pub /root/.ssh ; \
