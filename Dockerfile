@@ -224,6 +224,7 @@ done; \
 apk del --purge .build-deps; \
 rm -rf /tmp/*; \
 rm -rf /var/cache/apk/*; \
+rm -rf /data/www/*; \
 # 设置软件参数
 sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config \
 # 开始
