@@ -1,6 +1,7 @@
 FROM alpine:edge
 MAINTAINER guanshuo "12610446@qq.com"
 RUN  \
+
 # 创建用户与数据目录
 addgroup -g 82 www-data ; \
 adduser -u 82 -G www-data www-data ; \
@@ -8,7 +9,7 @@ mkdir -p /data/www && chown -R www-data:www-data /data/www/ ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 
-# apt install
+# apt包安装
 apk add --update --no-cache --virtual .build-deps \
     # public
     autoconf \
@@ -58,7 +59,8 @@ apk add --no-cache --virtual .run-deps \
     pwgen \
     sudo \
     tzdata ; \
-apk add --upgrade --no-cache grep ; \
+apk add --upgrade --no-cache \
+    grep ; \
 
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
@@ -180,11 +182,6 @@ tar zxvf master.tar.gz && cd tengine-master && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz tengine-master ; \
 
-# 安装听云
-wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb ; \
-wget http://download.networkbench.com/agent/system/1.1.1/tingyun-agent-system-1.1.1.x86_64.deb?a=1498149959157 -O tingyun-agent-system.deb ; \
-dpkg -i tingyun-agent-php.deb && dpkg -i tingyun-agent-system.deb && rm -rf /tingyun-*.deb ; \
-
 # 删除构建文件、测试文件、说明文档、检测文件等
 rm -rf \
     /usr/share/man \
@@ -215,6 +212,7 @@ rm -rf /var/cache/apk/*; \
 rm -rf /data/www/*; \
 # 设置软件参数
 sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config
+
 # 开始
 VOLUME ["/data"]
 EXPOSE 22 80 3306 8388 9001 11211
