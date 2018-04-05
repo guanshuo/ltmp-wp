@@ -10,7 +10,7 @@ echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 
 apk add --no-cache --virtual .run-deps \
     curl ; \
-apk add --upgrade --no-cache busybox ; \
+apk add --upgrade --no-cache grep ; \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 mariadb-version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 echo ${mariadb-version} ; \
