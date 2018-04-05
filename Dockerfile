@@ -8,13 +8,6 @@ mkdir -p /data/www && chown -R www-data:www-data /data/www/ ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 
-apk add --no-cache --virtual .run-deps \
-    curl ; \
-apk add --upgrade --no-cache grep ; \
-# 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
-mariadb-version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
-echo ${mariadb-version} ; \
-
 # apt install
 apk add --update --no-cache --virtual .build-deps \
     # public
@@ -65,11 +58,12 @@ apk add --no-cache --virtual .run-deps \
     pwgen \
     sudo \
     tzdata ; \
+apk add --upgrade --no-cache grep ; \
 
-
-
-wget -c https://downloads.mariadb.org/interstitial/mariadb-${mariadb-version}/source/mariadb-${mariadb-version}.tar.gz -O master.tar.gz ; \
-tar zxvf master.tar.gz && cd mariadb-${mariadb-version} && cmake . \
+# 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
+Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
+wget -c https://downloads.mariadb.org/interstitial/mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz -O master.tar.gz ; \
+tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
     -DCMAKE_INSTALL_PREFIX=/usr \
@@ -113,7 +107,7 @@ tar zxvf master.tar.gz && cd mariadb-${mariadb-version} && cmake . \
     -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
-make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${mariadb-version} ; \
+make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
 
 # 安装php
 wget -c https://github.com/php/php-src/archive/master.tar.gz ; \
