@@ -57,6 +57,7 @@ apk add --no-cache --virtual .run-deps \
     pwgen \
     sudo \
     tzdata ; \
+apk add --upgrade --no-cache busybox ; \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 mariadb-version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 wget -c https://downloads.mariadb.org/interstitial/mariadb-${mariadb-version}/source/mariadb-${mariadb-version}.tar.gz -O master.tar.gz ; \
