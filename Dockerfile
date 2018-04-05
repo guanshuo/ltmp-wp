@@ -1,6 +1,5 @@
 FROM alpine:edge
 MAINTAINER guanshuo "12610446@qq.com"
-ARG git_url
 RUN  \
 # 创建用户与数据目录
 addgroup -g 82 www-data ; \
@@ -58,27 +57,10 @@ apk add --no-cache --virtual .run-deps \
     pwgen \
     sudo \
     tzdata ; \
-git config --global http.postBuffer  524288000 ; \
-# 判断下有没有指定giturl
-if [ ! -n "$git_url" ]; then \
-    # 没有的话用git协议下载
-    git clone --recurse-submodules --depth=1 https://github.com/MariaDB/server.git ; \
-    git clone --recurse-submodules --depth=1 https://github.com/php/php-src.git ; \
-    git clone --recurse-submodules --depth=1 https://github.com/alibaba/tengine.git ; \
-else \
-    # 有的话先设置ssh信息再用ssh协议下载
-    sed -i -e "s/^.*StrictHostKeyChecking.*$/StrictHostKeyChecking\ no/" /etc/ssh/ssh_config; \
-    sed -i -e "s/^.*UserKnownHostsFile.*$/UserKnownHostsFile\ \/dev\/null/" /etc/ssh/ssh_config; \
-    (echo;read;echo)|ssh-keygen -t rsa ; \
-    git clone --depth=1 $(echo $git_url) /data/www ; \
-    cp -f /data/www/configs/id_rsa /root/.ssh && cp -f /data/www/configs/id_rsa.pub /root/.ssh ; \
-    echo yes|ssh -T git@github.com ; \
-    git clone --recurse-submodules --depth=1 git@github.com:MariaDB/server.git ; \
-    git clone --recurse-submodules --depth=1 git@github.com:php/php-src.git ; \
-    git clone --recurse-submodules --depth=1 git@github.com:alibaba/tengine.git ; \
-fi; \
-# 安装mariadb
-cd server && cmake . \
+# 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
+mariadb-version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
+wget -c https://downloads.mariadb.org/interstitial/mariadb-${mariadb-version}/source/mariadb-${mariadb-version}.tar.gz -O master.tar.gz
+tar zxvf master.tar.gz && cd mariadb-${mariadb-version} && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
     -DCMAKE_INSTALL_PREFIX=/usr \
@@ -122,13 +104,14 @@ cd server && cmake . \
     -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
-make -j "$(nproc)" && make install && make clean && rm -rf /server && cd / ; \
+make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${mariadb-version} ; \
 
 # 安装php
+wget -c https://github.com/php/php-src/archive/master.tar.gz ; \
 export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
-cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
+tar zxvf master.tar.gz && cd php-src-master && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
     --prefix=/usr/local/php7 \
     --exec-prefix=/usr/local/php7 \
@@ -178,7 +161,7 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
     --disable-fileinfo \
 && make -j "$(nproc)" && make install \
 && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
-&& make clean && rm -rf /php-src && cd / \
+&& make clean && cd / && rm -rf master.tar.gz php-src-master \
 && runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 		| tr ',' '\n' \
@@ -189,9 +172,10 @@ cd php-src && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_
 && pecl update-channels ; \ 
 
 # 安装tengine
-cd tengine && ./configure \
+wget -c https://github.com/alibaba/tengine/archive/master.tar.gz ; \
+tar zxvf master.tar.gz && cd tengine-master && ./configure \
     --with-http_concat_module \
-&& make -j "$(nproc)" && make install && make clean && rm -rf /tengine && cd / ; \
+&& make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz tengine-master ; \
 
 # 安装听云
 wget http://download.networkbench.com/agent/php/2.7.0/tingyun-agent-php-2.7.0.x86_64.deb?a=1498149881851 -O tingyun-agent-php.deb ; \
