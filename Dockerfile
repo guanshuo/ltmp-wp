@@ -1,7 +1,6 @@
 FROM alpine:edge
 MAINTAINER guanshuo "12610446@qq.com"
 RUN  \
-grep -V ; \
 # 创建用户与数据目录
 addgroup -g 82 www-data ; \
 adduser -u 82 -G www-data www-data ; \
@@ -58,8 +57,7 @@ apk add --no-cache --virtual .run-deps \
     pwgen \
     sudo \
     tzdata ; \
-apk add --upgrade --no-cache grep ; \
-grep -V ; \
+apk add --upgrade --no-cache busybox ; \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 mariadb-version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 wget -c https://downloads.mariadb.org/interstitial/mariadb-${mariadb-version}/source/mariadb-${mariadb-version}.tar.gz -O master.tar.gz ; \
