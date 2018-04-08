@@ -2,20 +2,31 @@ FROM alpine:edge
 MAINTAINER guanshuo "12610446@qq.com"
 RUN  \
 
-# 创建用户与数据目录
+# 创建用户与数据目录并赋予权限
 addgroup -g 82 www-data ; \
 adduser -u 82 -G www-data www-data ; \
 mkdir -p /data/www && chown -R www-data:www-data /data/www/ ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
-
 # apt包安装
 apk add --update --no-cache --virtual .build-deps \
     # public
     autoconf \
+    build-base \
     coreutils \
+    gnupg \
     libressl-dev \
     make \
+    zlib-dev \
+    # mariadb
+    attr \
+    bison \
+    cmake \
+    libaio-dev \
+    linux-headers \
+    ncurses-dev \
+    patch \
+    readline-dev \
     # php
     dpkg-dev dpkg \
     file \
@@ -29,39 +40,37 @@ apk add --update --no-cache --virtual .build-deps \
     libsodium-dev \
     libxml2-dev \
     sqlite-dev \
-    # mariadb
-    attr \
-    bison \
-    build-base \
-    cmake \
-    gnupg \
-    libaio-dev \
-    linux-headers \
-    ncurses-dev \
-    patch \
-    readline-dev \
-    zlib-dev ; \
+    # nginx
+    geoip-dev\
+    libtool \
+    pcre-dev ; \
 apk add --no-cache --virtual .run-deps \
     # public
     git \
     memcached \
     openssl openssh \
     supervisor \
+    # mariadb
+    libaio \
+    libstdc++ \
+    pwgen \
+    sudo \
+    tzdata \
     # php
     ca-certificates \
     curl \
     tar \
     xz \
     libressl \
-    # mariadb
-    libaio \
-    libstdc++ \
-    pwgen \
-    sudo \
-    tzdata ; \
+    # nginx
+    findutils \
+    geoip \
+    nghttp2 \
+    pcre ; \
+# 升级grep软件包不然无法使用Perl的正则表达式
 apk add --upgrade --no-cache \
     grep ; \
-
+    
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 wget -c https://downloads.mariadb.org/interstitial/mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz -O master.tar.gz ; \
@@ -215,6 +224,9 @@ sed -i -e "s/^.*PermitRootLogin.*$/PermitRootLogin\ yes/" /etc/ssh/sshd_config
 
 # 开始
 VOLUME ["/data"]
-EXPOSE 22 80 3306 8388 9001 11211
-CMD ["sh","-c","cd /data/www/ && git init && git remote add origin $(echo $git_url) && git pull origin master; \
-cp -f /data/www/configs/run.sh /run.sh && sed -i -e 's/\r//g' /run.sh && sed -i -e 's/^M//g' /run.sh && chmod +x /*.sh && . /run.sh "]
+EXPOSE 22 80 3306 9001 11211
+CMD ["sh","-c"," \
+    cd /data/www/ && git init && git remote add origin $(echo $git_url) && git pull origin master; \
+    cp -f /data/www/configs/run.sh /run.sh && sed -i -e 's/\r//g' /run.sh && sed -i -e 's/^M//g' /run.sh && chmod +x /*.sh ; \
+    . /run.sh \
+"]
