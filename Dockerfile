@@ -78,7 +78,6 @@ apk add --upgrade --no-cache grep ; \
 if false; then \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
-echo ${Mariadb_Version} ; \
 wget -c https://downloads.mariadb.org/interstitial/mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz -O master.tar.gz ; \
 tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DBUILD_CONFIG=mysql_release \
@@ -128,7 +127,7 @@ make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz
 fi ; \
 
 # 安装php
-wget -c https://github.com/php/php-src/archive/master.tar.gz ; \
+wget -c https://secure.php.net/get/php-7.2.4.tar.xz/from/this/mirror -O master.tar.gz ; \
 export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
@@ -162,11 +161,13 @@ runDeps="$( \
 && apk add --no-cache --virtual .run-deps $runDeps \
 && pecl update-channels ; \ 
 
+if false; then \
 # 安装tengine
 wget -c https://github.com/alibaba/tengine/archive/master.tar.gz ; \
 tar zxvf master.tar.gz && cd tengine-master && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz tengine-master ; \
+fi ; \
 
 # 删除构建文件、测试文件、说明文档、检测文件等
 rm -rf \
@@ -178,7 +179,7 @@ rm -rf \
     /usr/lib/libmysqlclient_r.so* \
     /usr/lib/libmysqld.so.* \
     /usr/bin/mysql_config \
-    /usr/bin/mysql_client_test; \
+    /usr/bin/mysql_client_test ; \
 find /usr/lib -name '*.a' -maxdepth 1 -print0 | xargs -0 rm; \
 find /usr/lib -name '*.so' -type l -maxdepth 1 -print0 | xargs -0 rm; \
 # 扫描共享目录，并移除无用的二进制文件与.so文件
