@@ -146,9 +146,9 @@ tar zxvf master.tar.gz && cd php-src-master && ./buildconf && gnuArch="$(dpkg-ar
     --with-openssl \
     --with-zlib \
     $(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
-    --enable-fpm
-    --with-fpm-user=www-data
-    --with-fpm-group=www-data
+    --enable-fpm \
+    --with-fpm-user=www-data \
+    --with-fpm-group=www-data \
 && make -j "$(nproc)" && make install ; \
 { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } ; \
 make clean && cd / && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } ; \
