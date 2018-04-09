@@ -1,5 +1,10 @@
 FROM alpine:edge
 MAINTAINER guanshuo "12610446@qq.com"
+ENV PHP_INI_DIR /usr/local/etc/php
+RUN mkdir -p $PHP_INI_DIR/conf.d
+ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-configure /usr/local/bin/
+ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-enable    /usr/local/bin/
+ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-install   /usr/local/bin/
 RUN  \
 
 # 创建用户与数据目录并赋予权限
@@ -28,31 +33,18 @@ apk add --update --no-cache --virtual .build-deps \
     patch \
     readline-dev \
     # php
-    bzip2-dev \
     curl-dev \
     dpkg-dev dpkg\ 
     file \
-    freetype-dev \
     g++ \
     gcc \
-    gettext-dev \
-    icu-dev \
     libc-dev \
     libedit-dev \
-    libgcc \
-    libjpeg-turbo-dev \
-    libltdl \
-    libmcrypt-dev \
-    libpng-dev \
     libsodium-dev \
-    libwebp-dev \
     libxml2-dev \
-    libxpm-dev \
-    libxslt \
     pkgconf \
     re2c \
     sqlite-dev \
-    zlib \
     # nginx
     geoip-dev\
     libtool \
@@ -73,26 +65,15 @@ apk add --no-cache --virtual .run-deps \
     # php
     ca-certificates \
     curl \
-    gd \
-    gettext \
-    iconv \
     libressl \
-    mbstring \
-    mcrypt \
-    mysqli \
-    opcache \
-    pdo \
-    pdo_mysql \
     xz \
-    bzip2 \
     # nginx
     findutils \
     geoip \
     nghttp2 \
     pcre ; \
 # 升级grep软件包不然无法使用Perl的正则表达式
-apk add --upgrade --no-cache \
-    grep ; \
+apk add --upgrade --no-cache grep ; \
 
 if false; then \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
@@ -143,7 +124,9 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
-make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
+make -j "$(nproc)" && make install 
+&& { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
+&& make clean && cd / && docker-php-source delete && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
 fi ; \
 
 # 安装php
@@ -153,52 +136,21 @@ export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
 tar zxvf master.tar.gz && cd php-src-master && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
-    --prefix=/usr/local/php7 \
-    --exec-prefix=/usr/local/php7 \
-    --bindir=/usr/local/php7/bin \
-    --sbindir=/usr/local/php7/sbin \
-    --includedir=/usr/local/php7/include \
-    --libdir=/usr/local/php7/lib/php \
-    --mandir=/usr/local/php7/php/man \
-    --with-config-file-path=/usr/local/php7/etc \
-    --with-mysql-sock=/var/run/mysqld/mysqld.sock \
-    --with-mhash \
-    --with-openssl \
-    --with-mysqli=shared,mysqlnd \
-    --with-pdo-mysql=shared,mysqlnd \
-    --with-gd \
-    --with-iconv \
-    --with-zlib \
-    --enable-zip \
-    --enable-inline-optimization \
+    --with-config-file-path="$PHP_INI_DIR" \
+    --with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
     --disable-cgi \
-    --disable-debug \
-    --disable-rpath \
-    --enable-shared \
-    --enable-xml \
-    --enable-bcmath \
-    --enable-shmop \
-    --enable-sysvsem \
-    --enable-mbregex \
-    --enable-mbstring \
     --enable-ftp \
-    --enable-pcntl \
-    --enable-sockets \
-    --with-xmlrpc \
-    --enable-soap \
-    --without-pear \
-    --with-gettext \
-    --enable-session \
+    --enable-mbstring \
+    --enable-mysqlnd \
+    --with-sodium=shared \
     --with-curl \
-    --with-jpeg-dir \
-    --with-freetype-dir \
-    --enable-opcache \
-    --enable-fpm \
-    --with-fpm-user=www-data \
-    --with-fpm-group=www-data \
-    --without-gdbm \
-    --enable-fast-install \
-    --disable-fileinfo \
+    --with-libedit \
+    --with-openssl \
+    --with-zlib \
+    $(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
+    --enable-fpm
+    --with-fpm-user=www-data
+    --with-fpm-group=www-data
 && make -j "$(nproc)" && make install \
 && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
 && make clean && cd / && rm -rf master.tar.gz php-src-master \
