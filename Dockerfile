@@ -28,28 +28,31 @@ apk add --update --no-cache --virtual .build-deps \
     patch \
     readline-dev \
     # php
-    curl-dev\
-    dpkg-devdpkg\
-    file\
-    freetype-dev\
-    g++\
-    gcc\
-    gettext-dev\
-    icu-dev\
-    libc-dev\
-    libedit-dev\
-    libgcc\
-    libjpeg-turbo-dev\
-    libltdl\
-    libmcrypt-dev\
-    libpng-dev\
-    libsodium-dev\
-    libxml2-dev\
-    libxslt\
-    pkgconf\
-    re2c\
-    sqlite-dev\
-    zlib\
+    bzip2-dev \
+    curl-dev \
+    dpkg-dev dpkg\ 
+    file \
+    freetype-dev \
+    g++ \
+    gcc \
+    gettext-dev \
+    icu-dev \
+    libc-dev \
+    libedit-dev \
+    libgcc \
+    libjpeg-turbo-dev \
+    libltdl \
+    libmcrypt-dev \
+    libpng-dev \
+    libsodium-dev \
+    libwebp-dev \
+    libxml2-dev \
+    libxpm-dev \
+    libxslt \
+    pkgconf \
+    re2c \
+    sqlite-dev \
+    zlib \
     # nginx
     geoip-dev\
     libtool \
