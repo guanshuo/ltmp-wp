@@ -127,7 +127,7 @@ make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz
 fi ; \
 
 # 安装php
-wget -c https://secure.php.net/get/php-7.2.4.tar.xz/from/this/mirror -O master.tar.gz ; \
+wget -c http://cn2.php.net/get/php-7.2.4.tar.gz/from/this/mirror -O master.tar.gz ; \
 export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
