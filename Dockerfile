@@ -77,7 +77,7 @@ apk add --upgrade --no-cache grep ; \
 
 if false; then \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
-Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
+Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -oPm 1 '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 wget -c https://downloads.mariadb.org/interstitial/mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz -O master.tar.gz ; \
 tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DBUILD_CONFIG=mysql_release \
@@ -126,12 +126,13 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
 make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
 fi ; \
 
-# 安装php
-wget -c http://cn2.php.net/get/php-7.2.4.tar.gz/from/this/mirror -O master.tar.gz ; \
+# 安装php,先去官网获取最新稳定版版本号，再进行下载
+Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N;s/\n//;b label' | grep -oPm 1 '(?<=Stable\<\/span\>PHP).*?(?=\(\<ahref)' | head -n1) ; \
+wget -c http://cn2.php.net/get/php-${Php_Version}.tar.gz/from/this/mirror -O master.tar.gz ; \
 export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
-tar zxvf master.tar.gz && cd php-src-master && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
+tar zxvf master.tar.gz && cd php-${Php_Version} && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
     --build="$gnuArch" \
     --with-config-file-path="$PHP_INI_DIR" \
     --with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
@@ -151,7 +152,7 @@ tar zxvf master.tar.gz && cd php-src-master && ./buildconf && gnuArch="$(dpkg-ar
 && make -j "$(nproc)" && make install ; \
 { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } ; \
 make clean && cd / && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } ; \
-rm -rf master.tar.gz php-src-master ; \
+rm -rf master.tar.gz php-${Php_Version} ; \
 runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 		| tr ',' '\n' \
