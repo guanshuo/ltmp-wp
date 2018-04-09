@@ -93,7 +93,7 @@ apk add --no-cache --virtual .run-deps \
 apk add --upgrade --no-cache \
     grep ; \
 
-<<COMMENT \
+if false; then \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 echo ${Mariadb_Version} ; \
@@ -143,7 +143,7 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
 make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
-COMMENT \
+fi ; \
 
 # 安装php
 wget -c https://github.com/php/php-src/archive/master.tar.gz ; \
