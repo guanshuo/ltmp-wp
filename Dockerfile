@@ -49,7 +49,6 @@ apk add --update --no-cache --virtual .build-deps \
     libxml2-dev \
     libxpm-dev \
     libxslt \
-    libzip-dev \
     pkgconf \
     re2c \
     sqlite-dev \
@@ -78,6 +77,7 @@ apk add --no-cache --virtual .run-deps \
     gettext \
     iconv \
     libressl \
+    libzip \
     mbstring \
     mcrypt \
     mysqli \
