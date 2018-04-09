@@ -124,9 +124,7 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
-make -j "$(nproc)" && make install 
-&& { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
-&& make clean && cd / && docker-php-source delete && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
+make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
 fi ; \
 
 # 安装php
@@ -151,10 +149,11 @@ tar zxvf master.tar.gz && cd php-src-master && ./buildconf && gnuArch="$(dpkg-ar
     --enable-fpm
     --with-fpm-user=www-data
     --with-fpm-group=www-data
-&& make -j "$(nproc)" && make install \
-&& { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
-&& make clean && cd / && rm -rf master.tar.gz php-src-master \
-&& runDeps="$( \
+&& make -j "$(nproc)" && make install ; \
+{ find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } ; \
+make clean && cd / && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } ; \
+rm -rf master.tar.gz php-src-master ; \
+runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 		| tr ',' '\n' \
 		| sort -u \
