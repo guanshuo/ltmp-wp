@@ -161,7 +161,7 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && ./buildconf && gnuArch="$(dpk
 		| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 )" \
 && apk add --no-cache --virtual .run-deps $runDeps \
-&& pecl update-channels ; \ 
+&& pecl update-channels \ 
 && rm -rf master.tar.gz php-${Php_Version} ; \
 
 if false; then \
