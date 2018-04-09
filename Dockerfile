@@ -71,19 +71,19 @@ apk add --no-cache --virtual .run-deps \
     sudo \
     tzdata \
     # php
-    ca-certificates\
-    curl\
-    gd\
-    gettext\
-    iconv\
-    libressl\
-    mbstring\
-    mcrypt\
-    mysqli\
-    opcache\
-    pdo\
-    pdo_mysql\
-    xz\
+    ca-certificates \
+    curl \
+    gd \
+    gettext \
+    iconv \
+    libressl \
+    mbstring \
+    mcrypt \
+    mysqli \
+    opcache \
+    pdo \
+    pdo_mysql \
+    xz \
     # nginx
     findutils \
     geoip \
