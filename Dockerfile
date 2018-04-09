@@ -149,11 +149,12 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && ./buildconf && gnuArch="$(dpk
     --enable-fpm \
     --with-fpm-user=www-data \
     --with-fpm-group=www-data \
-&& make -j "$(nproc)" && make install ; \
-{ find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } ; \
-make clean && cd / && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } ; \
-rm -rf master.tar.gz php-${Php_Version} ; \
-runDeps="$( \
+&& make -j "$(nproc)" \
+&& make install \
+&& { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
+&& make clean \
+&& cd / \
+&& runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 		| tr ',' '\n' \
 		| sort -u \
@@ -161,6 +162,7 @@ runDeps="$( \
 )" \
 && apk add --no-cache --virtual .run-deps $runDeps \
 && pecl update-channels ; \ 
+&& rm -rf master.tar.gz php-${Php_Version} ; \
 
 if false; then \
 # 安装tengine
