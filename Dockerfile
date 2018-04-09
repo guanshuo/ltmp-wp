@@ -28,18 +28,28 @@ apk add --update --no-cache --virtual .build-deps \
     patch \
     readline-dev \
     # php
-    dpkg-dev dpkg \
-    file \
-    g++ \
-    gcc \
-    libc-dev \
-    pkgconf \
-    re2c \
-    curl-dev \
-    libedit-dev \
-    libsodium-dev \
-    libxml2-dev \
-    sqlite-dev \
+    curl-dev\
+    dpkg-devdpkg\
+    file\
+    freetype-dev\
+    g++\
+    gcc\
+    gettext-dev\
+    icu-dev\
+    libc-dev\
+    libedit-dev\
+    libgcc\
+    libjpeg-turbo-dev\
+    libltdl\
+    libmcrypt-dev\
+    libpng-dev\
+    libsodium-dev\
+    libxml2-dev\
+    libxslt\
+    pkgconf\
+    re2c\
+    sqlite-dev\
+    zlib\
     # nginx
     geoip-dev\
     libtool \
@@ -50,6 +60,7 @@ apk add --no-cache --virtual .run-deps \
     memcached \
     openssl openssh \
     supervisor \
+    tar\
     # mariadb
     libaio \
     libstdc++ \
@@ -57,11 +68,19 @@ apk add --no-cache --virtual .run-deps \
     sudo \
     tzdata \
     # php
-    ca-certificates \
-    curl \
-    tar \
-    xz \
-    libressl \
+    ca-certificates\
+    curl\
+    gd\
+    gettext\
+    iconv\
+    libressl\
+    mbstring\
+    mcrypt\
+    mysqli\
+    opcache\
+    pdo\
+    pdo_mysql\
+    xz\
     # nginx
     findutils \
     geoip \
@@ -70,7 +89,8 @@ apk add --no-cache --virtual .run-deps \
 # 升级grep软件包不然无法使用Perl的正则表达式
 apk add --upgrade --no-cache \
     grep ; \
-    
+
+<<COMMENT \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -m 1 -oP '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 echo ${Mariadb_Version} ; \
@@ -120,6 +140,7 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
 make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
+COMMENT \
 
 # 安装php
 wget -c https://github.com/php/php-src/archive/master.tar.gz ; \
