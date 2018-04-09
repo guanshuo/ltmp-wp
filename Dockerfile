@@ -77,7 +77,6 @@ apk add --no-cache --virtual .run-deps \
     gettext \
     iconv \
     libressl \
-    libzip \
     mbstring \
     mcrypt \
     mysqli \
@@ -85,6 +84,7 @@ apk add --no-cache --virtual .run-deps \
     pdo \
     pdo_mysql \
     xz \
+    bzip2 \
     # nginx
     findutils \
     geoip \
