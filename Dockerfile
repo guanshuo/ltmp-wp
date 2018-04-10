@@ -14,6 +14,29 @@ mkdir -p /data/www && chown -R www-data:www-data /data/www/ ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
 # apt包安装
+apk add --no-cache --virtual .run-deps \
+    # public
+    git \
+    memcached \
+    openssh \
+    supervisor \
+    tar\
+    # mariadb
+    libaio \
+    libstdc++ \
+    pwgen \
+    sudo \
+    tzdata \
+    # php
+    ca-certificates \
+    curl \
+    libressl \
+    xz \
+    # nginx
+    findutils \
+    geoip \
+    nghttp2 \
+    pcre ; \
 apk add --update --no-cache --virtual .build-deps \
     # public
     autoconf \
@@ -49,29 +72,6 @@ apk add --update --no-cache --virtual .build-deps \
     geoip-dev\
     libtool \
     pcre-dev ; \
-apk add --no-cache --virtual .run-deps \
-    # public
-    git \
-    memcached \
-    openssh \
-    supervisor \
-    tar\
-    # mariadb
-    libaio \
-    libstdc++ \
-    pwgen \
-    sudo \
-    tzdata \
-    # php
-    ca-certificates \
-    curl \
-    libressl \
-    xz \
-    # nginx
-    findutils \
-    geoip \
-    nghttp2 \
-    pcre ; \
 # 升级grep软件包不然无法使用Perl的正则表达式
 apk add --upgrade --no-cache grep ; \
 
