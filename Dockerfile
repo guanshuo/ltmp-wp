@@ -53,7 +53,7 @@ apk add --no-cache --virtual .run-deps \
     # public
     git \
     memcached \
-    openssl openssh \
+    openssh \
     supervisor \
     tar\
     # mariadb
