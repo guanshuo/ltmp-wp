@@ -133,7 +133,7 @@ export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
 tar zxvf master.tar.gz && cd php-${Php_Version} && ./buildconf && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" && ./configure \
-    --force
+    --force \
     --build="$gnuArch" \
     --with-config-file-path="$PHP_INI_DIR" \
     --with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
