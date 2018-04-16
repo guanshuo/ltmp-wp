@@ -30,7 +30,8 @@ apk add --no-cache --virtual .run-deps \
     # php
     ca-certificates \
     curl \
-    libressl \
+    # libressl \
+    openssl \
     xz \
     # nginx
     findutils \
@@ -43,7 +44,9 @@ apk add --update --no-cache --virtual .build-deps \
     build-base \
     coreutils \
     gnupg \
-    libressl-dev \
+    # libressl-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
     make \
     zlib-dev \
     # mariadb
@@ -143,7 +146,8 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
     --with-sodium=shared \
     --with-curl \
     --with-libedit \
-    --with-openssl=/usr/ \
+    # --with-openssl=/usr/ \
+    --with-openssl \
     --with-zlib \
     $(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
     --enable-fpm \
