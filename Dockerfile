@@ -143,8 +143,7 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
     --with-sodium=shared \
     --with-curl \
     --with-libedit \
-    # --with-openssl=/usr/ \
-    --with-openssl \
+    --with-openssl=/usr/ \
     --with-zlib \
     $(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
     --enable-fpm \
