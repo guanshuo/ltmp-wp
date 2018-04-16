@@ -30,7 +30,7 @@ apk add --no-cache --virtual .run-deps \
     # php
     ca-certificates \
     curl \
-    # libressl \
+    libressl \
     openssl \
     xz \
     # nginx
@@ -44,7 +44,7 @@ apk add --update --no-cache --virtual .build-deps \
     build-base \
     coreutils \
     gnupg \
-    # libressl-dev \
+    libressl-dev \
     libssl-dev \
     libcurl4-openssl-dev \
     make \
