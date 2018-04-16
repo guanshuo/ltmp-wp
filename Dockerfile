@@ -124,7 +124,7 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
 make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
-fi ; \
+
 
 # 安装php,先去官网获取最新稳定版版本号，再进行下载
 Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N;s/\n//;b label' | grep -oPm 1 '(?<=Stable\<\/span\>PHP).*?(?=\(\<ahref)' | head -n1) ; \
@@ -163,6 +163,7 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && apk add --no-cache --virtual .run-deps $runDeps \
 && pecl update-channels \ 
 && rm -rf master.tar.gz php-${Php_Version} ; \
+fi ; \
 
 if false; then \
 # 安装tengine
