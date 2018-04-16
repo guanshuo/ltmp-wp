@@ -31,7 +31,6 @@ apk add --no-cache --virtual .run-deps \
     ca-certificates \
     curl \
     libressl \
-    openssl \
     xz \
     # nginx
     findutils \
@@ -45,8 +44,6 @@ apk add --update --no-cache --virtual .build-deps \
     coreutils \
     gnupg \
     libressl-dev \
-    libssl-dev \
-    libcurl4-openssl-dev \
     make \
     zlib-dev \
     # mariadb
