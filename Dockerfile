@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:latest
 MAINTAINER guanshuo "12610446@qq.com"
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN mkdir -p $PHP_INI_DIR/conf.d
@@ -12,7 +12,7 @@ addgroup -g 82 www-data ; \
 adduser -u 82 -G www-data www-data ; \
 mkdir -p /data/www && chown -R www-data:www-data /data/www/ ; \
 # 国内使用阿里云的软件源
-echo "http://mirrors.aliyun.com/alpine/edge/main/" > /etc/apk/repositories ; \
+echo "http://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repositories ; \
 # apt包安装
 apk add --no-cache --virtual .run-deps \
     # public
@@ -143,7 +143,7 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
     --with-sodium=shared \
     --with-curl \
     --with-libedit \
-    #--with-openssl=/usr \
+    --with-openssl=/usr \
     --with-zlib \
     $(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
     --enable-fpm \
