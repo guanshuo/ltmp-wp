@@ -2,14 +2,14 @@ FROM alpine:latest
 MAINTAINER guanshuo "12610446@qq.com"
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN mkdir -p $PHP_INI_DIR/conf.d
+# 添加安装php扩展的docker脚本方便后期增减扩展
 ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-configure /usr/local/bin/
 ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-enable    /usr/local/bin/
 ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-install   /usr/local/bin/
 RUN  \
 
 # 创建用户与数据目录并赋予权限
-addgroup -g 82 www-data ; \
-adduser -u 82 -G www-data www-data ; \
+addgroup -g 82 www-data && adduser -u 82 -G www-data www-data ; \
 mkdir -p /data/www && chown -R www-data:www-data /data/www/ ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repositories ; \
@@ -75,7 +75,6 @@ apk add --update --no-cache --virtual .build-deps \
 # 升级grep软件包不然无法使用Perl的正则表达式
 apk add --upgrade --no-cache grep ; \
 
-if false; then \
 # 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
 Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -oPm 1 '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 wget -c https://downloads.mariadb.org/interstitial/mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz -O master.tar.gz ; \
@@ -124,7 +123,6 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
     -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
 make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
-fi ; \
 
 # 安装php,先去官网获取最新稳定版版本号，再进行下载
 Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N;s/\n//;b label' | grep -oPm 1 '(?<=Stable\<\/span\>PHP).*?(?=\(\<ahref)' | head -n1) ; \
@@ -164,14 +162,11 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && pecl update-channels \ 
 && rm -rf master.tar.gz php-${Php_Version} ; \
 
-
-if false; then \
 # 安装tengine
 wget -c https://github.com/alibaba/tengine/archive/master.tar.gz ; \
 tar zxvf master.tar.gz && cd tengine-master && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz tengine-master ; \
-fi ; \
 
 # 删除构建文件、测试文件、说明文档、检测文件等
 rm -rf \
