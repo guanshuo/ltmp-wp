@@ -9,8 +9,10 @@ ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fp
 RUN  \
 
 # 创建用户与数据目录并赋予权限
-addgroup -g 82 www-data && adduser -u 82 -G www-data www-data ; \
-mkdir -p /data/www && chown -R www-data:www-data /data/www/ ; \
+addgroup -g 82  www-data && adduser -u 82  -G www-data www-data ; \
+addgroup -g 101 mysql    && adduser -u 100 -D -s /bin/bash -G mysql mysql && echo "PS1='\w\$ '" >> /home/mysql/.bashrc; \
+mkdir -p /data/www   && chown -R www-data:www-data /data/www/ ; \
+mkdir -p /data/mysql && chown -R mysql:mysql       /data/mysql/ ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repositories ; \
 # apt包安装
@@ -152,6 +154,7 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
 && make clean \
 && cd / \
+&& cp -f /php-${Php_Version}/php.ini-production /usr/local/php/lib/php.ini \
 && runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 		| tr ',' '\n' \
