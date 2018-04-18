@@ -153,7 +153,7 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && make install \
 && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
 && make clean \
-&& cp -f php.ini-production /usr/local/lib/php/php.ini \
+&& cp -f php.ini-production /usr/local/etc/php/php.ini \
 && cd / \
 && runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
