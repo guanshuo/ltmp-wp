@@ -116,7 +116,6 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DWITH_PARTITION_STORAGE_ENGINE=1 \
      # 不安装tokudb引擎
     -DPLUGIN_TOKUDB=NO \
-    -DWITHOUT_TOKUDB=1 \
      # 不编译某存储引擎
     -DWITHOUT_INNOBASE_STORAGE_ENGINE=1 \
     -DWITHOUT_ARCHIVE_STORAGE_ENGINE=1 \
