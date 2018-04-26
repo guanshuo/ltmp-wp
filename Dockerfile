@@ -6,6 +6,7 @@ RUN mkdir -p $PHP_INI_DIR/conf.d
 ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-configure /usr/local/bin/
 ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-enable    /usr/local/bin/
 ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-install   /usr/local/bin/
+ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-source        /usr/local/bin/
 RUN  \
 
 # 创建用户与数据目录并赋予权限
@@ -13,6 +14,7 @@ addgroup -g 82  www-data && adduser -u 82  -D -S -G www-data www-data ; \
 addgroup -g 101 mysql    && adduser -u 100 -D -S -s /bin/bash -G mysql mysql && echo "PS1='\w\$ '" >> /home/mysql/.bashrc; \
 mkdir -p /data/www   && chown -R www-data:www-data /data/www/ ; \
 mkdir -p /data/mysql && chown -R mysql:mysql       /data/mysql/ ; \
+chmod +x /usr/local/bin/docker-php-* ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repositories ; \
 # apt包安装
@@ -139,8 +141,11 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
     --enable-ftp \
     --enable-mbstring \
     --enable-mysqlnd \
+    --with-mysqli=mysqlnd \
+    --with-pdo-mysql=mysqlnd \
     --with-sodium=shared \
     --with-curl \
+    --with-gd \
     --with-libedit \
     --with-openssl \
     --with-zlib \
