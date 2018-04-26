@@ -34,6 +34,8 @@ apk add --no-cache --virtual .run-deps \
     # php
     ca-certificates \
     curl \
+    libjpeg \
+    libpng \
     libressl \
     xz \
     # nginx
@@ -65,6 +67,8 @@ apk add --update --no-cache --virtual .build-deps \
     file \
     g++ \
     gcc \
+    jpeg-dev \
+    libpng-dev \
     libc-dev \
     libedit-dev \
     libsodium-dev \
