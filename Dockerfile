@@ -141,6 +141,7 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
     --build="$gnuArch" \
     --with-config-file-path="$PHP_INI_DIR" \
     --with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
+    --with-mysql-sock=/run/mysqld/mysqld.sock \
     --disable-cgi \
     --enable-ftp \
     --enable-mbstring \
