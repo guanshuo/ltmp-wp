@@ -109,27 +109,10 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DINSTALL_DOCDIR=share/mysql/docs \
     -DINSTALL_SHAREDIR=share/mysql \
      # 库文件加载选项
-    -DWITH_READLINE=ON \
     -DWITH_ZLIB=system \
     -DWITH_SSL=system \
-    -DWITH_LIBWRAP=OFF \
-     # JEMALLOC优化内存
-    -DWITH_JEMALLOC=no \
-    -DWITH_EXTRA_CHARSETS=complex \
-    -DWITH_EMBEDDED_SERVER=ON \
-    -DWITH_ARCHIVE_STORAGE_ENGINE=1 \
-    -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
-    -DWITH_INNOBASE_STORAGE_ENGINE=1 \
-    -DWITH_PARTITION_STORAGE_ENGINE=1 \
      # 不安装tokudb引擎
-    -DPLUGIN_TOKUDB=NO \
-     # 不编译某存储引擎
-    -DWITHOUT_INNOBASE_STORAGE_ENGINE=1 \
-    -DWITHOUT_ARCHIVE_STORAGE_ENGINE=1 \
-    -DWITHOUT_BLACKHOLE_STORAGE_ENGINE=1 \
-    -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
-    -DWITHOUT_FEDERATED_STORAGE_ENGINE=1 \
-    -DWITHOUT_PBXT_STORAGE_ENGINE=1; \
+    -DPLUGIN_TOKUDB=NO ; \
 make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
 
 # 安装php,先去官网获取最新稳定版版本号，再进行下载
