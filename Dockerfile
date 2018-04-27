@@ -97,7 +97,6 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock \
     -DDEFAULT_CHARSET=utf8 \
     -DDEFAULT_COLLATION=utf8_general_ci \
-    -DENABLED_LOCAL_INFILE=ON \
     -DINSTALL_INFODIR=share/mysql/docs \
     -DINSTALL_MANDIR=share/man \
     -DINSTALL_PLUGINDIR=lib/mysql/plugin \
@@ -108,6 +107,7 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DINSTALL_MYSQLSHAREDIR=share/mysql \
     -DINSTALL_DOCDIR=share/mysql/docs \
     -DINSTALL_SHAREDIR=share/mysql \
+    -DENABLED_LOCAL_INFILE=1 \
      # 库文件加载选项
     -DWITH_ZLIB=system \
     -DWITH_SSL=system \
