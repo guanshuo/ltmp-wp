@@ -37,6 +37,7 @@ apk add --no-cache --virtual .run-deps \
     libjpeg \
     libpng \
     libressl \
+    libmemcached \
     xz \
     # nginx
     findutils \
@@ -172,6 +173,12 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && apk add --no-cache --virtual .run-deps $runDeps \
 && pecl update-channels \ 
 && rm -rf master.tar.gz php-${Php_Version} ; \
+
+# 安装memcache扩展
+wget -c https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz ; \
+tar zxvf php7.tar.gz && cd php-memcached-php7 && /usr/local/bin/phpize && ./configure \
+    --with-php-config=/usr/local/bin/php-config \
+&& make -j "$(nproc)" && make install && make clean && cd / && rm -rf php7.tar.gz php-memcached-php7 ; \
 
 # 安装tengine
 wget -c https://github.com/alibaba/tengine/archive/master.tar.gz ; \
