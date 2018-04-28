@@ -74,6 +74,7 @@ apk add --update --no-cache --virtual .build-deps \
     libedit-dev \
     libsodium-dev \
     libxml2-dev \
+    libmemcached-dev \
     pkgconf \
     re2c \
     sqlite-dev \
@@ -161,6 +162,7 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 wget -c https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz ; \
 tar zxvf php7.tar.gz && cd php-memcached-php7 && /usr/local/bin/phpize && ./configure \
     --with-php-config=/usr/local/bin/php-config \
+    --with-libmemcached-dir=/usr/include/libmemcached \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf php7.tar.gz php-memcached-php7 ; \
 
 # 安装tengine
