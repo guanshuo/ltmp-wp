@@ -118,7 +118,6 @@ make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz
 
 # 安装php,先去官网获取最新稳定版版本号，再进行下载
 Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N;s/\n//;b label' | grep -oPm 1 '(?<=Stable\<\/span\>PHP).*?(?=\(\<ahref)' | head -n1) ; \
-Php_Version=7.1.17 ; \
 wget -c http://cn2.php.net/get/php-${Php_Version}.tar.gz/from/this/mirror -O master.tar.gz ; \
 export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
