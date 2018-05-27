@@ -35,6 +35,8 @@ apk add --no-cache --virtual .run-deps \
     ca-certificates \
     curl \
     libgd \
+    libjpeg \
+    libpng \
     libressl \
     libmemcached \
     xz \
@@ -67,6 +69,8 @@ apk add --update --no-cache --virtual .build-deps \
     file \
     g++ \
     gcc \
+    jpeg-dev \
+    libpng-dev \
     libc-dev \
     libedit-dev \
     libsodium-dev \
