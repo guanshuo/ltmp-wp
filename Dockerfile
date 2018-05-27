@@ -96,6 +96,10 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DDEFAULT_CHARSET=utf8 \
     -DDEFAULT_COLLATION=utf8_general_ci \
     -DENABLED_LOCAL_INFILE=1 \
+    -DINSTALL_DOCREADMEDIR=share/mysql \
+    -DINSTALL_SUPPORTFILESDIR=share/mysql \
+    -DINSTALL_MYSQLSHAREDIR=share/mysql \
+    -DINSTALL_SHAREDIR=share/mysql \
      # 库文件加载选项
     -DWITH_ZLIB=system \
     -DWITH_SSL=system \
