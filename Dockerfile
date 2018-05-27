@@ -34,8 +34,7 @@ apk add --no-cache --virtual .run-deps \
     # php
     ca-certificates \
     curl \
-    libjpeg \
-    libpng \
+    libgd \
     libressl \
     libmemcached \
     xz \
@@ -68,8 +67,6 @@ apk add --update --no-cache --virtual .build-deps \
     file \
     g++ \
     gcc \
-    jpeg-dev \
-    libpng-dev \
     libc-dev \
     libedit-dev \
     libsodium-dev \
@@ -98,16 +95,6 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock \
     -DDEFAULT_CHARSET=utf8 \
     -DDEFAULT_COLLATION=utf8_general_ci \
-    -DINSTALL_INFODIR=share/mysql/docs \
-    -DINSTALL_MANDIR=share/man \
-    -DINSTALL_PLUGINDIR=lib/mysql/plugin \
-    -DINSTALL_SCRIPTDIR=bin \
-    -DINSTALL_INCLUDEDIR=include/mysql \
-    -DINSTALL_DOCREADMEDIR=share/mysql \
-    -DINSTALL_SUPPORTFILESDIR=share/mysql \
-    -DINSTALL_MYSQLSHAREDIR=share/mysql \
-    -DINSTALL_DOCDIR=share/mysql/docs \
-    -DINSTALL_SHAREDIR=share/mysql \
     -DENABLED_LOCAL_INFILE=1 \
      # 库文件加载选项
     -DWITH_ZLIB=system \
@@ -158,17 +145,17 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && pecl update-channels \ 
 && rm -rf master.tar.gz php-${Php_Version} ; \
 
-# 安装memcache扩展
-wget -c https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz ; \
-tar zxvf php7.tar.gz && cd php-memcached-php7 && /usr/local/bin/phpize && ./configure \
-    --with-php-config=/usr/local/bin/php-config \
-&& make -j "$(nproc)" && make install && make clean && cd / && rm -rf php7.tar.gz php-memcached-php7 ; \
-
 # 安装memcach扩展
 wget -c https://codeload.github.com/websupport-sk/pecl-memcache/tar.gz/NON_BLOCKING_IO_php7 -O pecl-memcache.tar.gz ; \
 tar zxvf pecl-memcache.tar.gz && cd pecl-memcache-NON_BLOCKING_IO_php7 && /usr/local/bin/phpize && ./configure \
     --with-php-config=/usr/local/bin/php-config \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf pecl-memcache.tar.gz pecl-memcache-NON_BLOCKING_IO_php7 ; \
+
+# 安装memcache扩展
+wget -c https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz ; \
+tar zxvf php7.tar.gz && cd php-memcached-php7 && /usr/local/bin/phpize && ./configure \
+    --with-php-config=/usr/local/bin/php-config \
+&& make -j "$(nproc)" && make install && make clean && cd / && rm -rf php7.tar.gz php-memcached-php7 ; \
 
 # 安装tengine
 wget -c https://github.com/alibaba/tengine/archive/master.tar.gz ; \
@@ -187,18 +174,7 @@ rm -rf \
     /usr/lib/libmysqld.so.* \
     /usr/bin/mysql_config \
     /usr/bin/mysql_client_test ; \
-find /usr/lib -name '*.a' -maxdepth 1 -print0 | xargs -0 rm; \
-find /usr/lib -name '*.so' -type l -maxdepth 1 -print0 | xargs -0 rm; \
-# 扫描共享目录，并移除无用的二进制文件与.so文件
-scanelf --symlink --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" \
-    /usr/bin/* /usr/lib/mysql/plugin/* | while read type osabi filename; do \
-    ([ "$osabi" != "STANDALONE" ] && [ "${filename}" != "/usr/bin/strip" ]) || continue; \
-    XATTR=$(getfattr --match="" --dump "${filename}"); \
-    strip "${filename}"; \
-    if [ -n "$XATTR" ]; then \
-        echo "$XATTR" | setfattr --restore=-; \
-    fi; \
-done; \
+
 # 清理构建依赖及软件包缓存
 apk del --purge .build-deps; \
 rm -rf /tmp/*; \
