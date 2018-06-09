@@ -93,17 +93,23 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DSYSCONFDIR=/etc/mysql \
-     # 默认数据目录
+    -DSYSCONFDIR=/etc/mysql \    
+    # 默认数据目录
     -DMYSQL_DATADIR=/data/mysql \
     -DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock \
     -DDEFAULT_CHARSET=utf8 \
     -DDEFAULT_COLLATION=utf8_general_ci \
-    -DENABLED_LOCAL_INFILE=1 \
+    -DINSTALL_INFODIR=share/mysql/docs \
+    -DINSTALL_MANDIR=share/man \
+    -DINSTALL_PLUGINDIR=lib/mysql/plugin \
+    -DINSTALL_SCRIPTDIR=bin \
+    -DINSTALL_INCLUDEDIR=include/mysql \
     -DINSTALL_DOCREADMEDIR=share/mysql \
     -DINSTALL_SUPPORTFILESDIR=share/mysql \
     -DINSTALL_MYSQLSHAREDIR=share/mysql \
+    -DINSTALL_DOCDIR=share/mysql/docs \
     -DINSTALL_SHAREDIR=share/mysql \
+    -DENABLED_LOCAL_INFILE=1 \    
      # 库文件加载选项
     -DWITH_ZLIB=system \
     -DWITH_SSL=system \
