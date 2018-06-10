@@ -2,13 +2,12 @@ FROM alpine:latest
 MAINTAINER guanshuo "12610446@qq.com"
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN  \
-mkdir -p $PHP_INI_DIR/conf.d
+mkdir -p $PHP_INI_DIR/conf.d ; \
 # 创建用户与数据目录并赋予权限
 addgroup -g 82  www-data && adduser -u 82  -D -S -G www-data www-data ; \
 addgroup -g 101 mysql    && adduser -u 100 -D -S -s /bin/bash -G mysql mysql && echo "PS1='\w\$ '" >> /home/mysql/.bashrc; \
 mkdir -p /data/www   && chown -R www-data:www-data /data/www/ ; \
 mkdir -p /data/mysql && chown -R mysql:mysql       /data/mysql/ ; \
-chmod +x /usr/local/bin/docker-php-* ; \
 # 国内使用阿里云的软件源
 echo "http://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repositories ; \
 # apt包安装
