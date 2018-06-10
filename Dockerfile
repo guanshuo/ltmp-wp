@@ -1,14 +1,8 @@
 FROM alpine:latest
 MAINTAINER guanshuo "12610446@qq.com"
 ENV PHP_INI_DIR /usr/local/etc/php
-RUN mkdir -p $PHP_INI_DIR/conf.d
-# 添加安装php扩展的docker脚本方便后期增减扩展
-ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-configure /usr/local/bin/
-ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-enable    /usr/local/bin/
-ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-ext-install   /usr/local/bin/
-ADD https://raw.githubusercontent.com/docker-library/php/master/7.2/alpine3.7/fpm/docker-php-source        /usr/local/bin/
 RUN  \
-
+mkdir -p $PHP_INI_DIR/conf.d
 # 创建用户与数据目录并赋予权限
 addgroup -g 82  www-data && adduser -u 82  -D -S -G www-data www-data ; \
 addgroup -g 101 mysql    && adduser -u 100 -D -S -s /bin/bash -G mysql mysql && echo "PS1='\w\$ '" >> /home/mysql/.bashrc; \
