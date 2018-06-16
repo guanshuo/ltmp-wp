@@ -27,6 +27,7 @@ apk add --no-cache --virtual .run-deps \
     # php
     ca-certificates \
     curl \
+    gd \
     libgd \
     libjpeg \
     libpng \
@@ -62,6 +63,7 @@ apk add --update --no-cache --virtual .build-deps \
     file \
     g++ \
     gcc \
+    gd-dev \
     jpeg-dev \
     libpng-dev \
     libc-dev \
