@@ -27,6 +27,7 @@ apk add --no-cache --virtual .run-deps \
     # php
     ca-certificates \
     curl \
+    freetype \
     gd \
     libgd \
     libjpeg \
@@ -44,6 +45,7 @@ apk add --update --no-cache --virtual .build-deps \
     autoconf \
     build-base \
     coreutils \
+    freetype-dev \
     gnupg \
     libressl-dev \
     make \
