@@ -145,6 +145,9 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && make install \
 && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
 && cp php.ini-production /usr/local/etc/php/php.ini \
+&& cd ext/gd && /usr/local/bin/phpize && ./configure \
+   --with-php-config=/usr/local/bin/php-config \
+&& make -j "$(nproc)" && make install \
 && make clean \
 && cd / \
 && runDeps="$( \
