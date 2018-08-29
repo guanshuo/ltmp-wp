@@ -88,7 +88,7 @@ apk add --upgrade --no-cache grep ; \
 Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -oPm 1 '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
 echo ${Mariadb_Version} ; \
 Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N;s/\n//;b label' | grep -oPm 1 '(?<=Stable\<\/span\>PHP).*?(?=\(\<ahref)' | head -n1) ; \
-echo ${php_Version} ; \
+echo ${Php_Version} ; \
 
 # 安装mariadb
 axel -o master.tar.gz https://mirrors.shu.edu.cn/mariadb//mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz ; \
