@@ -43,6 +43,7 @@ apk add --no-cache --virtual .run-deps \
 apk add --update --no-cache --virtual .build-deps \
     # public
     autoconf \
+    axel \
     build-base \
     coreutils \
     freetype-dev \
@@ -83,9 +84,14 @@ apk add --update --no-cache --virtual .build-deps \
 # 升级grep软件包不然无法使用Perl的正则表达式
 apk add --upgrade --no-cache grep ; \
 
-# 安装mariadb,先去官网获取最新稳定版版本号，再进行下载
+# 获取mariadb和php的官网最新稳定版版本号
 Mariadb_Version=$(curl -s https://downloads.mariadb.org | grep -oPm 1 '(?<=Download).*(?=Stable)' | sed 's/ //g') ; \
-wget -c https://downloads.mariadb.org/interstitial/mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz -O master.tar.gz ; \
+echo ${Mariadb_Version} ; \
+Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N;s/\n//;b label' | grep -oPm 1 '(?<=Stable\<\/span\>PHP).*?(?=\(\<ahref)' | head -n1) ; \
+echo ${php_Version} ; \
+
+# 安装mariadb
+axel -o master.tar.gz https://downloads.mariadb.org/interstitial/mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz ; \
 tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
@@ -114,9 +120,8 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DPLUGIN_TOKUDB=NO ; \
 make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
 
-# 安装php,先去官网获取最新稳定版版本号，再进行下载
-Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N;s/\n//;b label' | grep -oPm 1 '(?<=Stable\<\/span\>PHP).*?(?=\(\<ahref)' | head -n1) ; \
-wget -c http://cn2.php.net/get/php-${Php_Version}.tar.gz/from/this/mirror -O master.tar.gz ; \
+# 安装php
+axel -o master.tar.gz http://cn2.php.net/get/php-${Php_Version}.tar.gz/from/this/mirror ; \
 export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
