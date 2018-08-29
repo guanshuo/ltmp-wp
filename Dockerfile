@@ -91,7 +91,7 @@ Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N
 echo ${php_Version} ; \
 
 # 安装mariadb
-axel -o master.tar.gz https://downloads.mariadb.org/interstitial/mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz ; \
+axel -o master.tar.gz https://mirrors.shu.edu.cn/mariadb//mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz ; \
 tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
