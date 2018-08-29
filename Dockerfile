@@ -166,19 +166,19 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && rm -rf master.tar.gz php-${Php_Version} ; \
 
 # 安装memcach扩展
-axel -a -o pecl-memcache.tar.gz https://codeload.github.com/websupport-sk/pecl-memcache/tar.gz/NON_BLOCKING_IO_php7 ; \
+wget -c https://codeload.github.com/websupport-sk/pecl-memcache/tar.gz/NON_BLOCKING_IO_php7 -O pecl-memcache.tar.gz ; \
 tar zxvf pecl-memcache.tar.gz && cd pecl-memcache-NON_BLOCKING_IO_php7 && /usr/local/bin/phpize && ./configure \
     --with-php-config=/usr/local/bin/php-config \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf pecl-memcache.tar.gz pecl-memcache-NON_BLOCKING_IO_php7 ; \
 
 # 安装memcache扩展
-axel -a https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz ; \
+wget -c https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz ; \
 tar zxvf php7.tar.gz && cd php-memcached-php7 && /usr/local/bin/phpize && ./configure \
     --with-php-config=/usr/local/bin/php-config \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf php7.tar.gz php-memcached-php7 ; \
 
 # 安装tengine
-axel -a https://github.com/alibaba/tengine/archive/master.tar.gz ; \
+wget -c https://github.com/alibaba/tengine/archive/master.tar.gz ; \
 tar zxvf master.tar.gz && cd tengine-master && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz tengine-master ; \
