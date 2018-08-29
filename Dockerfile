@@ -91,7 +91,7 @@ Php_Version=$(curl -s http://php.net/downloads.php | sed 's/ //g'| sed ':label;N
 echo ${Php_Version} ; \
 
 # 安装mariadb
-axel -o master.tar.gz https://mirrors.shu.edu.cn/mariadb//mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz ; \
+axel -a -o master.tar.gz https://mirrors.shu.edu.cn/mariadb//mariadb-${Mariadb_Version}/source/mariadb-${Mariadb_Version}.tar.gz ; \
 tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
     -DBUILD_CONFIG=mysql_release \
      # 指定CMAKE编译后的安装的目录
@@ -121,7 +121,7 @@ tar zxvf master.tar.gz && cd mariadb-${Mariadb_Version} && cmake . \
 make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz mariadb-${Mariadb_Version} ; \
 
 # 安装php
-axel -o master.tar.gz http://cn2.php.net/get/php-${Php_Version}.tar.gz/from/this/mirror ; \
+axel -a -o master.tar.gz http://cn2.php.net/get/php-${Php_Version}.tar.gz/from/this/mirror ; \
 export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
        LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" ; \
@@ -166,19 +166,19 @@ tar zxvf master.tar.gz && cd php-${Php_Version} && gnuArch="$(dpkg-architecture 
 && rm -rf master.tar.gz php-${Php_Version} ; \
 
 # 安装memcach扩展
-wget -c https://codeload.github.com/websupport-sk/pecl-memcache/tar.gz/NON_BLOCKING_IO_php7 -O pecl-memcache.tar.gz ; \
+axel -a -o pecl-memcache.tar.gz https://codeload.github.com/websupport-sk/pecl-memcache/tar.gz/NON_BLOCKING_IO_php7 ; \
 tar zxvf pecl-memcache.tar.gz && cd pecl-memcache-NON_BLOCKING_IO_php7 && /usr/local/bin/phpize && ./configure \
     --with-php-config=/usr/local/bin/php-config \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf pecl-memcache.tar.gz pecl-memcache-NON_BLOCKING_IO_php7 ; \
 
 # 安装memcache扩展
-wget -c https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz ; \
+axel -a https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz ; \
 tar zxvf php7.tar.gz && cd php-memcached-php7 && /usr/local/bin/phpize && ./configure \
     --with-php-config=/usr/local/bin/php-config \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf php7.tar.gz php-memcached-php7 ; \
 
 # 安装tengine
-wget -c https://github.com/alibaba/tengine/archive/master.tar.gz ; \
+axel -a https://github.com/alibaba/tengine/archive/master.tar.gz ; \
 tar zxvf master.tar.gz && cd tengine-master && ./configure \
     --with-http_concat_module \
 && make -j "$(nproc)" && make install && make clean && cd / && rm -rf master.tar.gz tengine-master ; \
